@@ -1,0 +1,6 @@
+@include('backend.layouts.links')
+   @include('backend.blocks.default_header')
+   @include('backend.blocks.default_sidebar')
+      @yield('content')
+   @include('backend.blocks.default_footer')
+@include('backend.layouts.scripts')

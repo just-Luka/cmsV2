@@ -1,0 +1,28 @@
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-05-23 13:43:32`."
+scalar DateTime @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"Can be used as an argument to upload files using https://github.com/jaydenseric/graphql-multipart-request-spec"
+scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+#I prefer to use graphql for frontend side
+
+type Query {
+    courses(take: Int, main:Boolean=null): [Courses]
+}
+
+type Courses {
+    id: ID!
+    image: String
+    title: String
+    meta_title: String
+    desc: String
+    slug: String
+    lang_slug: String
+    price: Int
+    new_price: Int
+    fake_star: Float
+    fake_sold: Int
+}
