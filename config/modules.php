@@ -64,8 +64,6 @@ return [
             'fields'     => [
                 'create'   =>   true,
                 'store'    =>   true,
-                'remove'   =>   true,
-                'destroy'  =>   true,
             ]
         ],
 
@@ -204,21 +202,6 @@ return [
         'sliders'          => [
             'trans'   => 'sliders',
             'status'  => true,
-            'fields'  => [
-                'index'         =>   true,
-                'create'        =>   true,
-                'store'         =>   true,
-                'edit'          =>   true,
-                'update'        =>   true,
-                'trans'         =>   true,
-                'visible'       =>   true,
-                'destroy'       =>   true,
-            ]
-        ],
-
-        'events'          => [
-            'trans'   => 'events',
-            'status'  => false,
             'fields'  => [
                 'index'         =>   true,
                 'create'        =>   true,

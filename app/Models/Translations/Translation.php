@@ -29,7 +29,7 @@ class Translation extends Model implements ITranslate
         return $this->where('lang_slug', $lang)->where('translation_id', $id)->first();
     }
 
-    /** Don't make facade pattern for this!
+    /**
      * @param $lang
      * @param $id
      * @return mixed

@@ -3,17 +3,8 @@
 
 namespace App\Models;
 
-
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Translations\Slider as SliderT;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\App;
-
-class Slider extends Model
+class Slider extends RootModel
 {
-    use ModelHelper;
-
     protected $table = 'sliders';
     protected $fillable = [
         'attachment',
@@ -23,14 +14,6 @@ class Slider extends Model
         'attachment_id',
         'position'
     ];
-
-    /**
-     * @return HasOne
-     */
-    public function translation(): HasOne
-    {
-        return $this->hasOne(SliderT::class, 'slider_id', 'id')->where('lang_slug', App::getLocale());
-    }
 
     /**
      * @param null $attachment

@@ -3,8 +3,6 @@
 
 namespace App\Http\ViewComposers;
 
-
-use App\Models\Event;
 use Illuminate\View\View;
 
 class OfferComposer
@@ -15,9 +13,6 @@ class OfferComposer
      */
     public function compose(View $view)
     {
-        $event = new Event();
-        $eventData = $event->getFrontList();
-
-        return $view->with('eventData', $eventData);
+        // pass
     }
 }

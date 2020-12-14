@@ -6,14 +6,12 @@ use App\Http\Controllers\Backend\Controller;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Models\Translations\Tag as TagT;
+use Illuminate\Validation\Rule;
 
 class TagController extends Controller
 {
     private $tag;
     private $tagT;
-    private $rules = [
-        'slug' => 'required|unique:tags|min:2|max:255'
-    ];
 
     /**
      * TagController constructor.
@@ -61,17 +59,20 @@ class TagController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
-        $this->tag->create($this->data() + ['sort' => $this->tag->getMaxSort() + 1]);
+        $this->tag->create($this->data() + ['sort' => $this->tag->getSort()]);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
 
     /**
+     * @param null $id
      * @return array
      */
-    public function data()
+    public function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('tags')->ignore($id)],
+        ]);
         return [
             'slug' => $this->request->slug,
             'tag_of' => $this->request->type,
@@ -87,7 +88,7 @@ class TagController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->tag->find($id) ?: abort(404);
+        $this->data['item'] = $this->tag->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -100,11 +101,8 @@ class TagController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->tag->find($id);
-        if($item->slug !== $this->request->slug){
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->tag->findOrFail($id);
+        $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'tag updated successfully');
     }
@@ -116,7 +114,7 @@ class TagController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->tag->find($id)->delete();
+        $this->tag->findOrFail($id)->delete();
 
         return response('Tag deleted successfully', '200');
     }
@@ -129,7 +127,7 @@ class TagController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->tag->find($id) ?: abort(404);
+        $this->data['item'] = $this->tag->findOrFail($id);
         $this->data['itemContent'] = $this->tagT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -144,11 +142,7 @@ class TagController extends Controller
     public function transAction($locale, $id)
     {
         $item = $this->tagT->getItem($locale, $id);
-        if ($item) {
-            if($item->title !== $this->request->title) {
-                $this->request->validate(['title' => 'required|unique:tag_trans|min:2|max:255' ]);
-            }
-        }
+
         $requests = [
             'title'        => $this->request->title,
             'tag_id'      => $id,
@@ -166,7 +160,7 @@ class TagController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->tag->find($id);
+        $item = $this->tag->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

@@ -181,15 +181,6 @@
                     </ul>
                 </li>
 
-                <li class="nav-item">
-                    <a href="{{ route('backend.events.index',App::getLocale())}}" class="nav-link">
-                        <i class="nav-icon fas fa-bullhorn"></i>
-                        <p>
-                            {{ lang('events') }}
-                        </p>
-                    </a>
-                </li>
-
             </ul>
         </nav>
         <!-- /.sidebar-menu -->

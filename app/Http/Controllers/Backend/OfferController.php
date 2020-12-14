@@ -4,22 +4,22 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
 use App\Http\Controllers\Backend\Controller;
+use App\Http\Controllers\Traits\AttachableTrait;
 use App\Models\OfferProduct;
 use App\Models\Product;
-use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Models\Offer;
 use App\Models\Translations\Offer as OfferT;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class OfferController extends Controller
 {
+    use AttachableTrait;
+
     private $offer;
     private $offerT;
     private $product;
-    private $rules = [
-        'price' => 'required|numeric|gt:0'
-    ];
+
     /**
      * OfferController constructor.
      * @param Request $request
@@ -68,18 +68,22 @@ class OfferController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules + [ 'slug' => 'required|unique:offers|min:2|max:255']);
-        $item = $this->offer->create($this->data() + ['sort' => $this->offer->getMaxSort() + 1,  'offer_end' => $this->request->offer_end]);
-        $this->attachOffers($item->id);
+        $item = $this->offer->create($this->data() + ['sort' => $this->offer->getSort(),  'offer_end' => $this->request->offer_end]);
+        $this->attachOffer($item->id);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
 
     /**
+     * @param null $id
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('offers')->ignore($id)],
+        ]);
+
         return [
             'slug' => $this->request->slug,
             'price' => $this->request->price,
@@ -97,7 +101,7 @@ class OfferController extends Controller
     public function edit($locale, $id, OfferProduct $offerProduct)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->offer->find($id) ?: abort(404);
+        $this->data['item'] = $this->offer->findOrFail($id);
         $this->data['products'] = $this->product->with('translation')->get();
 
         $productIds = $offerProduct->getList($id)->pluck('product_id');
@@ -113,15 +117,12 @@ class OfferController extends Controller
      */
     public function update($locale, $id)
     {
-        $this->request->validate($this->rules);
-        $item = $this->offer->find($id);
-        if ($item->slug !== $this->request->slug){
-            $this->request->validate([ 'slug' => 'required|unique:offers|min:2|max:255']);
-        }
+        $this->request->validate(['price' => 'required|numeric|gt:0']);
+        $item = $this->offer->findOrFail($id);
         $offerDate = $this->request->offer_end ?: $this->request->old_time;
 
-        $item->update($this->data() + ['offer_end' => $offerDate]);
-        $this->attachOffers($id);
+        $item->update($this->data($item->id) + ['offer_end' => $offerDate]);
+        $this->attachOffer($id);
 
         return redirect()->back()->with('updated', 'Offer updated successfully');
     }
@@ -133,7 +134,7 @@ class OfferController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $item = $this->offer->find($id)->delete();
+        $this->offer->findOrFail($id)->delete();
 
         return response('Offer deleted successfully', '200');
     }
@@ -147,7 +148,7 @@ class OfferController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->offer->find($id) ?: abort(404);
+        $this->data['item'] = $this->offer->findOrFail($id);
         $this->data['itemContent'] = $this->offerT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -179,7 +180,7 @@ class OfferController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->offer->find($id);
+        $item = $this->offer->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

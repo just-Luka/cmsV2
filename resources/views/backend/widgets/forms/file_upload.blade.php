@@ -23,7 +23,7 @@
 
 @push('scripts')
     <script>
-        {!! \File::get(base_path('vendor/unisharp/laravel-filemanager/public/js/stand-alone-button.js')) !!}
+        {!! \File::get(base_path('public/vendor/laravel-filemanager/js/stand-alone-button.js')) !!}
     </script>
 
     <script>

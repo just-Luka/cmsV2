@@ -3,8 +3,6 @@
 
 namespace App\Http\ViewComposers;
 
-
-use App\Models\Offer;
 use Illuminate\View\View;
 
 class ProductOfferComposer
@@ -15,9 +13,6 @@ class ProductOfferComposer
      */
     public function compose(View $view)
     {
-        $offers = new Offer();
-        $offerData = $offers->where('visible', 1)->orderBy('sort')->with('translation')->get();
-
-        return $view->with('data', ['offers' => $offerData]);
+        // pass
     }
 }

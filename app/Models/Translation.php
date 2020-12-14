@@ -2,12 +2,8 @@
 
 namespace App\Models;
 
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-
-class Translation extends Model
+class Translation extends RootModel
 {
-    use ModelHelper;
 
     protected $table = 'translation';
 

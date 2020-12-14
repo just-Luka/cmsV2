@@ -2,26 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Translations\Category as CategoryT;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\App;
-
-class Category extends Model
+class Category extends RootModel
 {
-    use ModelHelper;
-
     protected $table = 'categories';
     protected $guarded = [];
-
-    /**
-     * @return HasOne
-     */
-    public function translation(): HasOne
-    {
-        return $this->hasOne(CategoryT::class, 'category_id', 'id')->where('lang_slug', App::getLocale());
-    }
 
     /**
      * @param null $type
@@ -43,9 +27,10 @@ class Category extends Model
 
     /**
      * @param $slug
+     * @return mixed
      */
     public function frontItem($slug)
     {
-        return $this->where('visible', 1)->where('slug', $slug)->first() ?: abort(404);
+        return $this->where('visible', 1)->where('slug', $slug)->firstOrFail();
     }
 }

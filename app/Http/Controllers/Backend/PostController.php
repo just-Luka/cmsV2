@@ -4,21 +4,22 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
 use App\Http\Controllers\Backend\Controller;
+use App\Http\Controllers\Traits\AttachableTrait;
 use App\Models\Category;
-use App\Models\Translations\Category as CategoryT;
 use App\Models\Post;
 use App\Models\RefCategory;
 use App\Models\Translations\Post as PostT;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
+    use AttachableTrait;
+
     private $post;
     private $postT;
     private $category;
-    private $rules = [
-        'slug' => 'required|unique:posts|min:2|max:255'
-    ];
+
     /**
      * PostController constructor.
      * @param Request $request
@@ -69,9 +70,7 @@ class PostController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
-        $item = $this->post->create($this->data() + ['sort' => $this->post->getMaxSort() + 1]);
-
+        $item = $this->post->create($this->data() + ['sort' => $this->post->getSort()]);
         $this->attachCategory($item->id);
 
         return redirect()->route('backend.'.$this->moduleName.'.index', ['locale' => $locale]);
@@ -80,8 +79,12 @@ class PostController extends Controller
     /**
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('posts')->ignore($id)],
+        ]);
+
         return [
             'slug' => $this->request->slug,
             'template' => $this->request->template,
@@ -98,7 +101,7 @@ class PostController extends Controller
     public function edit($locale, $id, RefCategory $refCategory)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->post->find($id) ?: abort(404);
+        $this->data['item'] = $this->post->findOrFail($id);
         $this->data['categories'] = $this->category->getList($this->moduleName)->get();
 
         $categoryIds = $refCategory->getList($this->moduleName, $id)->pluck('category_id');
@@ -111,16 +114,11 @@ class PostController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update($locale, $id)
     {
-        $item = $this->post->find($id);
-
-        if ($item->slug !== $this->request->slug){
-            $this->request->validate($this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->post->findOrFail($id);
+        $item->update($this->data($item->id));
         $this->attachCategory($id);
 
         return redirect()->back()->with('updated', 'Post updated successfully');
@@ -133,7 +131,7 @@ class PostController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->post->find($id)->delete();
+        $this->post->findOrFail($id)->delete();
 
         return response('Post deleted successfully', '200');
     }
@@ -146,7 +144,7 @@ class PostController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->post->find($id) ?: abort(404);
+        $this->data['item'] = $this->post->findOrFail($id);
         $this->data['itemContent'] = $this->postT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -178,7 +176,7 @@ class PostController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->post->find($id);
+        $item = $this->post->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

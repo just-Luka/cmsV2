@@ -10,12 +10,10 @@ use App\Models\RefMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Models\Translations\Page as PageT;
+use Illuminate\Validation\Rule;
 
 class PageController extends Controller
 {
-    private $rules = [
-        'slug' => 'required|unique:pages|min:2|max:255'
-    ];
     private $page;
     private $pageT;
 
@@ -63,12 +61,10 @@ class PageController extends Controller
     /**
      * @param $locale
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
-        $this->page->create($this->data() + [ 'sort' => $this->page->getMaxSort()+1]);
+        $this->page->create($this->data() + [ 'sort' => $this->page->getSort()]);
 
         return redirect()->route('backend.'.$this->moduleName.'.index', ['locale'=>$locale]);
     }
@@ -76,8 +72,12 @@ class PageController extends Controller
     /**
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('pages')->ignore($id)],
+        ]);
+
         return [
             'slug' => $this->request->slug,
             'template' => $this->request->template,
@@ -94,7 +94,7 @@ class PageController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->page->find($id) ?: abort(404);
+        $this->data['item'] = $this->page->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -107,11 +107,8 @@ class PageController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->page->find($id);
-        if ($this->request->slug !== $item->slug){
-            $this->request->validate($this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->page->findOrFail($id);
+        $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'Page updated successfully');
     }
@@ -123,7 +120,7 @@ class PageController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->page->find($id)->delete();
+        $this->page->findOrFail($id)->delete();
 
         return response('page deleted successfully', '200');
     }
@@ -137,7 +134,7 @@ class PageController extends Controller
     public function trans($locale, $id, Media $media)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->page->find($id);
+        $this->data['item'] = $this->page->findOrFail($id);
         $this->data['itemContent'] = $this->pageT->getItem($locale, $id);
         $this->data['mediaFileData'] = $media->getMediaByRef($this->moduleName, $id);
         $this->data['fileString'] = FileLib::fileToString($this->data['mediaFileData']);
@@ -188,7 +185,7 @@ class PageController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->page->find($id);
+        $item = $this->page->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

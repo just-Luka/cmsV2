@@ -33,9 +33,6 @@ $currentLang = \Illuminate\Support\Facades\App::getLocale();
               <a href="{{ route('backend.languages.create', ['locale'=>$currentLang]) }}" class="dropdown-item">
                 <i class="flag-icon flag-icon- mr-2"></i> {{ lang('add_more') }}
               </a>
-              <a href="{{ route('backend.languages.remove', ['locale'=>$currentLang]) }}" class="dropdown-item">
-                <i class="flag-icon flag-icon- mr-2"></i> {{ lang('remove') }}
-              </a>
             </div>
         </li>
         {{--

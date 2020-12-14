@@ -62,7 +62,7 @@ class Modules extends Command
                 throw new \Exception('incorrect --side parameter, try : --side=backend, --side=frontend or --side=both');
         }
         /* TODO success message! */
-        echo "success";
+        echo "success\n";
         return 0;
     }
 }

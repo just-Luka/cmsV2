@@ -3,10 +3,7 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
-
-class RefTag extends Model
+class RefTag extends RootModel
 {
     protected $table = 'ref_tag';
     protected $guarded = [];

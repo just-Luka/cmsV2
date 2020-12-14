@@ -17,7 +17,7 @@ class PageSeeder extends Seeder
 
         DB::table('pages')->insert([
             'visible'   => 1,
-            'sort'      => $page->getMaxSort() + 1,
+            'sort'      => $page->getSort(),
             'template'  => 'index',
             'is_main'   => 1,
             'slug'      => '',

@@ -3,12 +3,7 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
-use App\Models\Translations\Category as CategoryT;
-
-class RefCategory extends Model
+class RefCategory extends RootModel
 {
     protected $table = 'ref_category';
     protected $guarded = [];

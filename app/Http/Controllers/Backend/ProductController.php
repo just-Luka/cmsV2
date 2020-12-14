@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
 use App\Http\Controllers\Backend\Controller;
+use App\Http\Controllers\Traits\AttachableTrait;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Media;
@@ -14,18 +15,17 @@ use App\Models\RefTag;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Models\Translations\Product as ProductT;
+use Illuminate\Validation\Rule;
 
 class ProductController extends Controller
 {
+    use AttachableTrait;
+
     private $product;
     private $productT;
     private $category;
     private $brand;
     private $tag;
-
-    private $rules = [
-        'slug' => 'required|unique:products|min:2',
-    ];
 
     /**
      * ProductController constructor.
@@ -81,8 +81,7 @@ class ProductController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
-        $item = $this->product->create($this->data() + ['sort' => $this->product->getMaxSort() + 1]);
+        $item = $this->product->create($this->data() + ['sort' => $this->product->getSort()]);
         $this->attachCategory($item->id);
         $this->attachTag($item->id);
 
@@ -90,12 +89,16 @@ class ProductController extends Controller
     }
 
 
-
     /**
+     * @param null $id
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('products')->ignore($id)],
+        ]);
+
         return [
             'price'        => $this->request->price,
             'brand_id'     => $this->request->brand,
@@ -119,7 +122,7 @@ class ProductController extends Controller
     public function edit($locale, $id, RefCategory $refCategory, RefTag $refTag)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->product->find($id) ?: abort(404);
+        $this->data['item'] = $this->product->findOrFail($id);
 
         $this->data['categories'] = $this->category->getList($this->moduleName)->get();
         $categoryIds = $refCategory->getList($this->moduleName, $id)->pluck('category_id');
@@ -142,11 +145,9 @@ class ProductController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->product->find($id);
-        if ($this->request->slug !== $item->slug){
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->product->findOrFail($id);
+
+        $item->update($this->data($item->id));
         $this->attachCategory($id);
         $this->attachTag($id);
         return redirect()->back()->with('updated', 'Product updated successfully!');
@@ -159,7 +160,7 @@ class ProductController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->product->find($id)->delete();
+        $this->product->findOrFail($id)->delete();
 
         return response('Product is deleted successfully', 200);
     }
@@ -173,7 +174,7 @@ class ProductController extends Controller
     public function trans($locale, $id, Media $media)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->product->find($id) ?: abort(404);
+        $this->data['item'] = $this->product->findOrFail($id);
         $this->data['itemContent'] = $this->productT->getItem($locale, $id);
         $this->data['mediaFileData'] = $media->getMediaByRef($this->moduleName, $id);
         $this->data['fileString'] = FileLib::fileToString($this->data['mediaFileData']);
@@ -219,7 +220,7 @@ class ProductController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->product->find($id);
+        $item = $this->product->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

@@ -10,7 +10,7 @@ class TinyMCE {
     }
 
     /**
-     * Use when I want to get array of Strings like [0] => 'Привет', [1] => 'мир',
+     * method is using on front, to explode words between enter, typed by text editor! e.x [0] => "Hello", [1] => "World!"
      * @param String $text
      * @return array|false|string[]
      */

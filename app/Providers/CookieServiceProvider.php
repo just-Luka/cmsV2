@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Traits\ControllerHelper;
+use App\Traits\AttachableTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;

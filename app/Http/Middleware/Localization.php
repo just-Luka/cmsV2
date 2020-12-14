@@ -22,11 +22,11 @@ class Localization
         if (!$languageList->contains($request->locale)) {
             abort(404);
         }else {
+            /* if you decide to put more logic, code, create class and remove that shit */
             App::setLocale($request->locale);
             setCookie('lang', $request->locale, time() + (86400 * 7), '/');
         }
 
         return $next($request);
     }
-
 }

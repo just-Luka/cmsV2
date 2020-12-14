@@ -7,14 +7,13 @@ use App\Libs\Date;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Validation\Rule;
 
 class RoleController extends Controller
 {
     private $allowedModules;
     private $role;
-    private $rules = [
-        'status' => 'required|unique:roles|max:255|min:2',
-    ];
+
     /**
      * UserController constructor.
      * @param Request $request
@@ -56,7 +55,6 @@ class RoleController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
         $this->role->create($this->data());
 
         return redirect()->route('backend.roles.index', ['locale' => $locale]);
@@ -71,14 +69,20 @@ class RoleController extends Controller
     }
 
     /**
+     * @param null $id
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'status' => ['required', 'min:2', 'max:255', Rule::unique('roles')->ignore($id)],
+        ]);
+
         $modules = $this->request->except(['status', '_token']);
         foreach ($modules as $key => $value){
             $this->parseSelectedModules($key);
         }
+
         return [
             'status' => $this->request->status,
             'permissions' => json_encode($this->allowedModules)
@@ -93,7 +97,7 @@ class RoleController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->role->find($id) ?: abort(404);
+        $this->data['item'] = $this->role->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -102,15 +106,11 @@ class RoleController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update($locale, $id)
     {
-        $item = $this->role->find($id);
-        if ($item->status !== $this->request->status){
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->role->findOrFail($id);
+        $item->update($this->data($item->id));
 
         return redirect()->back();
     }
@@ -122,7 +122,7 @@ class RoleController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->role->find($id)->delete();
+        $this->role->findOrFail($id)->delete();
 
         return redirect()->back();
     }

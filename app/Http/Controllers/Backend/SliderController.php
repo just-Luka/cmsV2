@@ -64,7 +64,7 @@ class SliderController extends Controller
     {
         $this->request->validate(['concrete_attachment' => 'required']);
         $this->slider->create($this->data() + [
-                'sort' => $this->slider->getMaxSort() + 1,
+                'sort' => $this->slider->getSort(),
                 'attachment'    => $this->request->attachment,
                 'attachment_id' => $this->request->concrete_attachment
             ]);
@@ -92,7 +92,7 @@ class SliderController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['items'] = $this->slider->find($id) ?: abort(404);
+        $this->data['items'] = $this->slider->findOrFail($id);
         $this->data['attached'] = DB::table($this->data['sliderData']->attachment)->find($this->data['sliderData']->attachment_id);
 
         return view($this->templateName, $this->data);
@@ -105,7 +105,7 @@ class SliderController extends Controller
      */
     public function update($locale, $id)
     {
-        $this->slider->find($id)->update($this->data());
+        $this->slider->findOrFail($id)->update($this->data());
 
         return redirect()->back()->with('updated', 'slider updated successfully');
     }
@@ -117,7 +117,7 @@ class SliderController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->slider->find($id)->delete();
+        $this->slider->findOrFail($id)->delete();
 
         return response('slider deleted successfully', '200');
     }
@@ -130,7 +130,7 @@ class SliderController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->slider->find($id) ?: abort(404);
+        $this->data['item'] = $this->slider->findOrFail($id);
         $this->data['itemContent'] = $this->sliderT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -164,7 +164,7 @@ class SliderController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->slider->find($id);
+        $item = $this->slider->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

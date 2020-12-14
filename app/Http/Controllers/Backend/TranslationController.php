@@ -9,15 +9,10 @@ use App\Models\TranslationDuplicate;
 use App\Models\Translations\Translation as TranslationT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class TranslationController extends Controller
 {
-    /**
-     * @var string[]
-     */
-    private $rules = [
-        'key'   => 'required|unique:translation|max:255',
-    ];
     private $translationT;
     private $translation;
 
@@ -76,18 +71,22 @@ class TranslationController extends Controller
      */
     public function store($locale)
     {
-        $this->request->validate($this->rules);
-        $item = $this->translation->create($this->data() + ['sort' => $this->translation->getMaxSort()+1]);
+        $item = $this->translation->create($this->data() + ['sort' => $this->translation->getSort()]);
         $this->translationTAction($item->id);
 
         return redirect()->back()->with('created', 'translation created successfully');
     }
 
     /**
+     * @param null $id
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'key' => ['required', 'max:255', Rule::unique('translation')->ignore($id)],
+        ]);
+
         return [
             'key' => $this->request->key,
             'is_backend' => $this->request->is_backend == 1 ? 1 : 2
@@ -127,7 +126,7 @@ class TranslationController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->translation->find($id) ?: abort(404);
+        $this->data['item'] = $this->translation->findOrFail($id);
         $this->data['list'] = $this->translationT->where('lang_slug', 'like', '%')->where('translation_id', $id)->get();
 
         return view($this->templateName, $this->data);
@@ -141,11 +140,8 @@ class TranslationController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->translation->find($id);
-        if ($item->key !== $this->request->key) {
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->translation->findOrFail($id);
+        $item->update($this->data($item->id));
         $this->translationTAction($id);
 
         return redirect()->back()->with('updated', 'translation updated successfully');
@@ -158,7 +154,7 @@ class TranslationController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->translation->find($id)->delete();
+        $this->translation->findOrFail($id)->delete();
 
         return redirect()->back()->with('deleted', 'translation deleted successfully');
     }

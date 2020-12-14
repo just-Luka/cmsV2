@@ -2,26 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\App;
-use App\Models\Translations\Product as ProductT;
-
-class Product extends Model
+class Product extends RootModel
 {
-    use ModelHelper;
-
     protected $table = 'products';
     protected $guarded = [];
-
-    /**
-     * @return HasOne
-     */
-    public function translation(): HasOne
-    {
-        return $this->hasOne(ProductT::class, 'product_id', 'id')->where('lang_slug', App::getLocale());
-    }
 
     /**
      * @param array|object $id
@@ -34,9 +18,10 @@ class Product extends Model
 
     /**
      * @param $slug
+     * @return mixed
      */
     public function frontItem($slug)
     {
-        return $this->where('visible', 1)->where('slug', $slug)->first() ?: abort(404);
+        return $this->where('visible', 1)->where('slug', $slug)->firstOrFail();
     }
 }

@@ -3,10 +3,9 @@
 namespace App\Models;
 
 use App\Facades\FileLib;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
-class Media extends Model
+class Media extends RootModel
 {
 
     protected $guarded = [];

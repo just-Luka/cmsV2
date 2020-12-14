@@ -19,6 +19,7 @@ class Permission
      */
     public function handle($request, Closure $next)
     {
+        /* TODO make more understandable, may I create decorator pattern*/
         if(!Auth::check()){
             return redirect()->route('login');
         }

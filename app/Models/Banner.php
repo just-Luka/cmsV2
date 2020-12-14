@@ -2,26 +2,10 @@
 
 namespace App\Models;
 
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Translations\Banner as BannerT;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\App;
-
-class Banner extends Model
+class Banner extends RootModel
 {
-    use ModelHelper;
-
     protected $table = 'banners';
     protected $guarded = [];
-
-    /**
-     * @return HasOne
-     */
-    public function translation(): HasOne
-    {
-        return $this->hasOne(BannerT::class, 'banner_id', 'id')->where('lang_slug', App::getLocale());
-    }
 
     /**
      * @param null $type

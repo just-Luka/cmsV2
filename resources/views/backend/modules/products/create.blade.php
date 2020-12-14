@@ -42,11 +42,11 @@
                                         <label>{{ lang('brands') }}</label>
                                         <select class="form-control" name="brand" id="default_select">
                                             @foreach($brands as $brand)
-                                                <option value="{{ $brand->id }}">{{ $brand->translation->title }}</option>
+                                                <option value="{{ $brand->id }}">{{ $brand->translation->title ?? '####' }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-
+                                    {{-- TODO category, tag, selector rename as multiple selector! --}}
                                     @include('backend.widgets.forms.category_selector',
                                     [
                                         'matches' => ''

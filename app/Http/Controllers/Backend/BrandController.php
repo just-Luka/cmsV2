@@ -6,14 +6,12 @@ use App\Http\Controllers\Backend\Controller;
 use App\Models\Brand;
 use App\Models\Translations\Brand as BrandT;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class BrandController extends Controller
 {
     private $brand;
     private $brandT;
-    private $rules = [
-        'slug' => 'required|unique:brands|min:2|max:255'
-    ];
 
     /**
      * BrandController constructor.
@@ -57,24 +55,26 @@ class BrandController extends Controller
     /**
      * @param $locale
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store($locale)
     {
-        $this->validate($this->request, $this->rules);
-        $this->brand->create($this->data() + ['sort' => $this->brand->getMaxSort() + 1]);
+        $this->brand->create($this->data() + ['sort' => $this->brand->getSort()]); /* TODO `sort` set in model as default increment value */
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
 
     /**
+     * @param null $id
      * @return array
-     * @throws \Illuminate\Validation\ValidationException
      */
-    private function data()
+    private function data($id=null): array
     {
+        $this->request->validate([
+                'slug' => ['required', 'min:2', 'max:255', Rule::unique('brands')->ignore($id)],
+        ]);
+
         return [
-            'slug'     => $this->request->slug,
+            'slug'    => $this->request->slug,
             'visible' => $this->request->visible,
         ];
     }
@@ -87,7 +87,7 @@ class BrandController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->brand->find($id) ?: abort(404);
+        $this->data['item'] = $this->brand->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -96,15 +96,11 @@ class BrandController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update($locale, $id)
     {
-        $item = $this->brand->find($id);
-        if ($item->slug !== $this->request->slug){
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->brand->findOrFail($id);
+        $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'brand updated successfully');
     }
@@ -116,7 +112,7 @@ class BrandController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->brand->find($id)->delete();
+        $this->brand->findOrFail($id)->delete();
 
         return response('brands deleted successfully', '200');
     }
@@ -129,7 +125,7 @@ class BrandController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->brand->find($id) ?: abort(404);;
+        $this->data['item'] = $this->brand->findOrFail($id);
         $this->data['itemContent'] = $this->brandT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -161,7 +157,7 @@ class BrandController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->brand->find($id);
+        $item = $this->brand->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

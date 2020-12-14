@@ -2,9 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class RefMedia extends Model
+class RefMedia extends RootModel
 {
     protected $table = 'ref_media';
     protected $guarded = [];

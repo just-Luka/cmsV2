@@ -19,5 +19,4 @@ class Product extends Model implements ITranslate
     {
         return $this->where('lang_slug', $lang)->where('product_id', $id)->first();
     }
-
 }

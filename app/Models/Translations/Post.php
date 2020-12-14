@@ -19,5 +19,4 @@ class Post extends Model implements ITranslate
     {
         return $this->where('lang_slug', $lang)->where('post_id', $id)->first();
     }
-
 }

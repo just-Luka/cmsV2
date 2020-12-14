@@ -3,27 +3,10 @@
 
 namespace App\Models;
 
-
-use App\Traits\ModelHelper;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Translations\Tag as TagT;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Facades\App;
-
-class Tag extends Model
+class Tag extends RootModel
 {
-    use ModelHelper;
-
     protected $table = 'tags';
     protected $guarded = [];
-
-    /**
-     * @return HasOne
-     */
-    public function translation(): HasOne
-    {
-        return $this->hasOne(TagT::class, 'tag_id', 'id')->where('lang_slug', App::getLocale());
-    }
 
     /**
      * @param $id
@@ -45,9 +28,10 @@ class Tag extends Model
 
     /**
      * @param $slug
+     * @return mixed
      */
     public function frontItem($slug)
     {
-        return $this->where('visible', 1)->where('slug', $slug)->first() ?: abort(404);
+        return $this->where('visible', 1)->where('slug', $slug)->firstOrFail();
     }
 }

@@ -6,15 +6,12 @@ use App\Http\Controllers\Backend\Controller;
 use App\Models\Category;
 use App\Models\Translations\Category as CategoryT;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
     private $category;
     private $categoryT;
-
-    private $rules = [
-        'slug' => 'required|unique:categories|min:2|max:255'
-    ];
 
     /**
      * CategoryController constructor.
@@ -60,21 +57,24 @@ class CategoryController extends Controller
     /**
      * @param $locale
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store($locale)
     {
-        $this->validate($this->request, $this->rules);
-        $this->category->create($this->data() + ['sort' => $this->category->getMaxSort() + 1]);
+        $this->category->create($this->data() + ['sort' => $this->category->getSort()]);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
 
     /**
+     * @param null $id
      * @return array
      */
-    private function data()
+    private function data($id=null)
     {
+        $this->request->validate([
+            'slug' => ['required', 'min:2', 'max:255', Rule::unique('categories')->ignore($id)],
+            ]);
+
         return [
             'slug' => $this->request->slug,
             'category_of' => $this->request->type,
@@ -90,7 +90,7 @@ class CategoryController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->category->find($id) ?: abort(404);
+        $this->data['item'] = $this->category->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -103,11 +103,8 @@ class CategoryController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->category->find($id);
-        if($item->slug !== $this->request->slug){
-            $this->validate($this->request, $this->rules);
-        }
-        $item->update($this->data());
+        $item = $this->category->findOrFail($id);
+        $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'category updated successfully');
     }
@@ -119,7 +116,7 @@ class CategoryController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->category->find($id)->delete();
+        $this->category->findOrFail($id)->delete();
 
         return response('Category deleted successfully', '200');
     }
@@ -132,7 +129,7 @@ class CategoryController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->category->find($id) ?: abort(404);
+        $this->data['item'] = $this->category->findOrFail($id);
         $this->data['itemContent'] = $this->categoryT->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
@@ -142,16 +139,10 @@ class CategoryController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function transAction($locale, $id)
     {
         $itemContent = $this->categoryT->getItem($locale, $id);
-        if ($itemContent) {
-            if($itemContent->title !== $this->request->title) {
-                $this->request->validate(['title' => 'required|unique:category_trans|min:2|max:255' ]);
-            }
-        }
 
         $request = [
             'title'       => $this->request->title,
@@ -170,7 +161,7 @@ class CategoryController extends Controller
      */
     public function visible($locale, $id)
     {
-        $item = $this->category->find($id);
+        $item = $this->category->findOrFail($id);
         $item->visible = $this->request->action ? 1 : 0;
         $item->save();
 

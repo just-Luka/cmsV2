@@ -10,19 +10,19 @@ scalar Upload @scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload
 #I prefer to use graphql for frontend side
 
 type Query {
-    courses(take: Int, main:Boolean=null): [Courses]
+#    courses(take: Int, main:Boolean=null): [Courses]
 }
-
-type Courses {
-    id: ID!
-    image: String
-    title: String
-    meta_title: String
-    desc: String
-    slug: String
-    lang_slug: String
-    price: Int
-    new_price: Int
-    fake_star: Float
-    fake_sold: Int
-}
+#
+#type Courses {
+#    id: ID!
+#    image: String
+#    title: String
+#    meta_title: String
+#    desc: String
+#    slug: String
+#    lang_slug: String
+#    price: Int
+#    new_price: Int
+#    fake_star: Float
+#    fake_sold: Int
+#}

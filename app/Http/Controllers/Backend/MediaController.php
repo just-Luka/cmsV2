@@ -47,5 +47,4 @@ class MediaController extends Controller
     {
         return $this->base('images');
     }
-
 }

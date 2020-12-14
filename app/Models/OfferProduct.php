@@ -3,10 +3,7 @@
 
 namespace App\Models;
 
-
-use Illuminate\Database\Eloquent\Model;
-
-class OfferProduct extends Model
+class OfferProduct extends RootModel
 {
     protected $table = 'offer_product';
     protected $guarded = [];

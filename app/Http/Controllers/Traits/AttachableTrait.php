@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace App\Http\Controllers\Traits;
 
 use App\Models\Category;
 use App\Models\Language;
@@ -14,23 +14,24 @@ use App\Models\Translations\Tag as TagT;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
 
-trait ControllerHelper
+/* TODO I don't like here, code must be reduced!!!!! plus need to add some events On Delete */
+trait AttachableTrait
 {
-    /**TODO when attached is deleting, references are not deleting
+    /**
      * @param $id
      */
     public function attachCategory($id)
     {
-        $refCategory = new RefCategory();
+        $object = new RefCategory();
 
-        $getCategoryReference = $refCategory->getList($this->moduleName, $id);
-        if ($getCategoryReference->get()) {
-            $getCategoryReference->delete();
+        $links = $object->getList($this->moduleName, $id);
+        if ($links->get()) {
+            $links->delete();
         }
 
         foreach ($this->request->all() as $key => $value) {
             if (preg_match('/category_/', $key)){
-                $refCategory->create([
+                $object->create([
                     'attached_to'   => $this->moduleName,
                     'attachment_id' => $id,
                     'category_id'   => $value,
@@ -44,16 +45,16 @@ trait ControllerHelper
      */
     public function attachTag($id)
     {
-        $refTag = new RefTag();
+        $object = new RefTag();
 
-        $getTagReference = $refTag->getList($this->moduleName, $id);
-        if ($getTagReference->get()) {
-            $getTagReference->delete();
+        $links = $object->getList($this->moduleName, $id);
+        if ($links->get()) {
+            $links->delete();
         }
 
         foreach ($this->request->all() as $key => $value) {
             if (preg_match('/tag_/', $key)){
-                $refTag->create([
+                $object->create([
                     'attached_to'   => $this->moduleName,
                     'attachment_id' => $id,
                     'tag_id'   => $value,
@@ -65,22 +66,23 @@ trait ControllerHelper
     /**
      * @param $id
      */
-    public function attachOffers($id)
+    public function attachOffer($id)
     {
-        $productOffer = new OfferProduct();
-        $productOfferRef = $productOffer->getList($id);
+        $object = new OfferProduct();
 
-        if ($productOfferRef->get()) {
-            $productOfferRef->delete();
+        $links = $object->getList($id);
+        if ($links->get()) {
+            $links->delete();
         }
 
         foreach ($this->request->all() as $key => $value) {
             if (preg_match('/product_/', $key)){
-                $productOffer->create([
+                $object->create([
                     'offer_id' => $id,
                     'product_id' => $value,
                 ]);
             }
         }
     }
+
 }

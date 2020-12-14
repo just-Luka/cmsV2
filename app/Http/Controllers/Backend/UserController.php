@@ -63,11 +63,10 @@ class UserController extends Controller
     /**
      * @param $locale
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store($locale)
     {
-        $this->validate($this->request, $this->validationArray);
+        $this->request->validate($this->validationArray);
         $this->user->create($this->data() + [
                 'password' => Hash::make($this->request->password),
                 'email_verified_at' => Carbon::now()->toDateTimeString(),
@@ -101,12 +100,12 @@ class UserController extends Controller
      * @param $locale
      * @param $id
      * @param Role $role
-     * @return \Illuminate\Contracts\Foundation\Application
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($locale, $id, Role $role)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->user->find($id) ?: abort(404);;
+        $this->data['item'] = $this->user->findOrFail($id);
         $this->data['userRole'] = $role->find($this->data['item']->role_id);
         $this->data['roles'] = $role->getList();
 
@@ -117,18 +116,17 @@ class UserController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update($locale, $id)
     {
-        $item = $this->user->find($id);
+        $item = $this->user->findOrFail($id);
         $data = $this->data();
 
         if ($item->name !== $this->request->name){
-            $this->validate($this->request, ['name' => 'required|max:255|unique:users']);
+            $this->request->validate(['name' => 'required|max:255|unique:users']);
         }
         if ($this->request->has('password') && ($this->request->password !== 'noPasswordChanged')){
-            $this->validate($this->request, ['password' => 'required|min:8']);
+            $this->request->validate(['password' => 'required|min:8']);
             $data['password'] = Hash::make($this->request->password);
         }
 
@@ -144,7 +142,7 @@ class UserController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->user->find($id)->delete();
+        $this->user->findOrFail($id)->delete();
 
         return response('User deleted successfully',200);
     }

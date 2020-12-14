@@ -10,11 +10,9 @@ if(!function_exists('lang')){
      */
     function lang($word)
     {
-        $translation = new Translation();
-        $translationT = new TranslationT();
-        $item = $translation->getItem($word);
+        $item = (new Translation())->getItem($word);
 
-        return $translationT->getMeaning(App::getLocale(), $item ? $item->id : null, $word);
+        return (new TranslationT())->getMeaning(App::getLocale(), $item ? $item->id : null, $word);
     }
 }
 

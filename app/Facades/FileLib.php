@@ -22,6 +22,6 @@ class FileLib
      */
     public static function __callStatic($method, $args)
     {
-        return (self::resolveFacade('filterFile'))->$method(...$args);
+        return (self::resolveFacade('filterFile'))->$method(...$args); /*TODO I dont like `filterFile` that name */
     }
 }

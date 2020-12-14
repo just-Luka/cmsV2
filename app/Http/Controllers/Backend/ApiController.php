@@ -19,7 +19,7 @@ class ApiController extends Controller
         return class_exists($model) ? new $model : response('Model not found!');
     }
 
-    /**
+    /** That use javascript to make able select multiple category, tags ... other items selection!
      * @param $locale
      * @param $modelName
      * @return mixed

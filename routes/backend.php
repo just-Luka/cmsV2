@@ -126,16 +126,6 @@ Route::group(['prefix'=>'manage', 'namespace'=>'Backend','middleware'=>'permissi
         Route::post('/sliders/trans/action/{id}', 'SliderController@transAction')->name('backend.sliders.transAction');
         Route::post('/sliders/visible/{id}', 'SliderController@visible')->name('backend.sliders.visible');
         Route::post('/sliders/destroy/{id}', 'SliderController@destroy')->name('backend.sliders.destroy');
-        /* events */
-        Route::get('/events', 'EventController@index')->name('backend.events.index');
-        Route::get('/events/create', 'EventController@create')->name('backend.events.create');
-        Route::post('/events/store', 'EventController@store')->name('backend.events.store');
-        Route::get('/events/edit/{id}', 'EventController@edit')->name('backend.events.edit');
-        Route::post('/events/update/{id}', 'EventController@update')->name('backend.events.update');
-        Route::get('/events/trans/{id}', 'EventController@trans')->name('backend.events.trans');
-        Route::post('/events/trans/action/{id}', 'EventController@transAction')->name('backend.events.transAction');
-        Route::post('/events/visible/{id}', 'EventController@visible')->name('backend.events.visible');
-        Route::post('/events/destroy/{id}', 'EventController@destroy')->name('backend.events.destroy');
         /* Brands */
         Route::get('/brands', 'BrandController@index')->name('backend.brands.index');
         Route::get('/brands/create', 'BrandController@create')->name('backend.brands.create');
