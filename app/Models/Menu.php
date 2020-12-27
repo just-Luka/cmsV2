@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Menu extends RootModel
+class Menu extends BaseModel
 {
     protected $table = 'menu';
     protected $guarded = [];

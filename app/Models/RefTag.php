@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-class RefTag extends RootModel
+class RefTag extends BaseModel
 {
     protected $table = 'ref_tag';
     protected $guarded = [];

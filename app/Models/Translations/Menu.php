@@ -3,9 +3,9 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Menu extends Model implements ITranslate
+class Menu extends BaseModel implements ITranslate
 {
     protected $table = 'menu_trans';
     protected $guarded = [];

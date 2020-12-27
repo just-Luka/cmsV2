@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\App;
 
-abstract class RootModel extends Model
+abstract class BaseModel extends Model
 {
     /**
      * @return int

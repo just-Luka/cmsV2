@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
 use Illuminate\Http\Request;
 
-class SoldController extends Controller
+class SoldController extends BaseController
 {
     /**
      * UserController constructor.

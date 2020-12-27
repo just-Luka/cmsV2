@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Role extends RootModel
+class Role extends BaseModel
 {
     protected $guarded = [];
 

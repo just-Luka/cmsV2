@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Product extends RootModel
+class Product extends BaseModel
 {
     protected $table = 'products';
     protected $guarded = [];

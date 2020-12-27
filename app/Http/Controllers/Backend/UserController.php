@@ -3,39 +3,31 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
-use App\Http\Controllers\Backend\Controller;
-use App\Models\Media;
-use App\Models\RefMedia;
 use App\Models\Role;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class UserController extends BaseController
 {
-    private $user;
-    private $refMedia;
     private $validationArray = [
-        'name'   => 'required|unique:users|max:255',
-        'email' => 'required|unique:users',
+        'name'     => 'required|unique:users|max:255',
+        'email'    => 'required|unique:users',
         'password' => 'required|min:8',
     ];
 
     /**
      * UserController constructor.
      * @param Request $request
-     * @param User $user
-     * @param RefMedia $refMedia
      */
-    public function __construct(Request $request, User $user, RefMedia $refMedia)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'users';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
-        $this->user = $user;
-        $this->refMedia = $refMedia;
         $this->request = $request;
+        $this->model = new User();
     }
 
     /**
@@ -49,13 +41,12 @@ class UserController extends Controller
     }
 
     /**
-     * @param Role $role
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function create(Role $role)
+    public function create()
     {
         $this->templateName .= 'create';
-        $this->data['roles'] = $role->getList();
+        $this->data['roles'] = (new Role())->getList();
 
         return view($this->templateName, $this->data);
     }
@@ -67,7 +58,7 @@ class UserController extends Controller
     public function store($locale)
     {
         $this->request->validate($this->validationArray);
-        $this->user->create($this->data() + [
+        $this->model->create($this->data() + [
                 'password' => Hash::make($this->request->password),
                 'email_verified_at' => Carbon::now()->toDateTimeString(),
                 'email' => $this->request->email,
@@ -82,9 +73,9 @@ class UserController extends Controller
     private function data()
     {
         return [
-            'name' => $this->request->name,
+            'name'    => $this->request->name,
             'role_id' => $this->request->selectedRole,
-            'image' => FileLib::fileParse($this->request->filepath)['full_src'] ?? null
+            'image'   => FileLib::fileParse($this->request->filepath)['full_src'] ?? null
         ];
     }
 
@@ -93,19 +84,18 @@ class UserController extends Controller
      */
     public function show()
     {
-        return $this->user->getListWithRoles($this->request->roleID, $this->request->order)->paginate(9);
+        return $this->model->getListWithRoles($this->request->roleID, $this->request->order)->paginate(9);
     }
 
     /**
      * @param $locale
      * @param $id
-     * @param Role $role
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function edit($locale, $id, Role $role)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->user->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
         $this->data['userRole'] = $role->find($this->data['item']->role_id);
         $this->data['roles'] = $role->getList();
 
@@ -119,7 +109,7 @@ class UserController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->user->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $data = $this->data();
 
         if ($item->name !== $this->request->name){
@@ -142,7 +132,7 @@ class UserController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->user->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('User deleted successfully',200);
     }

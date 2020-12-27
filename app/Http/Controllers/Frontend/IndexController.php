@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\GraphQL\Queries\Courses;
 use App\Models\Page;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Frontend\Controller;
-use App\Models\Translations\Page as PageT;
 
-class IndexController extends Controller
+class IndexController extends BaseController
 {
     /**
      * @param $locale

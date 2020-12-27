@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Translation extends RootModel
+class Translation extends BaseModel
 {
 
     protected $table = 'translation';

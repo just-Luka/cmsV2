@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Facades\CategoryFacade;
 use App\Facades\FileLib;
-use App\Http\Controllers\Backend\Controller;
 use App\Http\Controllers\Traits\AttachableTrait;
 use App\Models\Category;
 use App\Models\Post;
@@ -12,31 +12,22 @@ use App\Models\Translations\Post as PostT;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class PostController extends Controller
+class PostController extends BaseController
 {
     use AttachableTrait;
-
-    private $post;
-    private $postT;
-    private $category;
 
     /**
      * PostController constructor.
      * @param Request $request
-     * @param Post $post
-     * @param PostT $postT
-     * @param Category $category
      */
-    public function __construct(Request $request, Post $post, PostT $postT, Category $category)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'posts';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['templates'] = config('settings.root.post_templates');
         $this->request = $request;
-        $this->post = $post;
-        $this->postT = $postT;
-        $this->category = $category;
+        $this->setModel(new Post());
     }
 
     /**
@@ -46,7 +37,7 @@ class PostController extends Controller
     public function index($locale)
     {
         $this->templateName .= 'wrapper';
-        $this->data['items'] = $this->post->with('translation')->paginate(self::PAG_NUM);
+        $this->data['items'] = $this->model->with('translation')->paginate(self::PAG_NUM);
 
         return view($this->templateName, $this->data);
     }
@@ -58,7 +49,7 @@ class PostController extends Controller
     public function create($locale)
     {
         $this->templateName .= 'create';
-        $this->data['categories'] = $this->category->getList($this->moduleName)->get();
+        $this->data['categories'] = (new Category())->getList($this->moduleName)->get();
 
         return view($this->templateName, $this->data);
     }
@@ -70,7 +61,7 @@ class PostController extends Controller
      */
     public function store($locale)
     {
-        $item = $this->post->create($this->data() + ['sort' => $this->post->getSort()]);
+        $item = $this->model->create($this->data() + ['sort' => $this->model->getSort()]);
         $this->attachCategory($item->id);
 
         return redirect()->route('backend.'.$this->moduleName.'.index', ['locale' => $locale]);
@@ -89,7 +80,7 @@ class PostController extends Controller
             'slug' => $this->request->slug,
             'template' => $this->request->template,
             'image' => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
-            'visible' => $this->request->visible || 0,
+            'visible' => $this->request->visible,
         ];
     }
 
@@ -98,14 +89,12 @@ class PostController extends Controller
      * @param $id
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function edit($locale, $id, RefCategory $refCategory)
+    public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->post->findOrFail($id);
-        $this->data['categories'] = $this->category->getList($this->moduleName)->get();
-
-        $categoryIds = $refCategory->getList($this->moduleName, $id)->pluck('category_id');
-        $this->data['myCategories'] = $this->category->myCategories($categoryIds);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['categories'] = (new Category())->getList($this->moduleName)->get();
+        $this->data['myCategories'] = (new CategoryFacade($this->moduleName))->relatedItems($id);
 
         return view($this->templateName, $this->data);
     }
@@ -117,7 +106,7 @@ class PostController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->post->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $item->update($this->data($item->id));
         $this->attachCategory($id);
 
@@ -131,7 +120,7 @@ class PostController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->post->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('Post deleted successfully', '200');
     }
@@ -144,8 +133,8 @@ class PostController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->post->findOrFail($id);
-        $this->data['itemContent'] = $this->postT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new PostT())->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -157,29 +146,16 @@ class PostController extends Controller
      */
     public function transAction($locale, $id)
     {
-        $itemContent = $this->postT->getItem($locale, $id);
+        $this->setModel(new PostT());
+        $itemContent = $this->model->getItem($locale, $id);
         $requests = [
             'title' => $this->request->title,
             'content' => $this->request->tm,
             'post_id' => $id,
             'lang_slug' => $locale,
         ];
-        $itemContent ? $itemContent->update($requests) : $this->postT->create($requests);
+        $itemContent ? $itemContent->update($requests) : $this->model->create($requests);
 
         return redirect()->back()->with('updated', '200');
-    }
-
-    /**
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->post->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
     }
 }

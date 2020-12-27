@@ -2,30 +2,26 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
-use App\Libs\Date;
 use App\Models\Role;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
 use Illuminate\Validation\Rule;
 
-class RoleController extends Controller
+class RoleController extends BaseController
 {
     private $allowedModules;
-    private $role;
 
     /**
      * UserController constructor.
      * @param Request $request
      */
-    public function __construct(Request $request, Role $role)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'roles';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['modules'] = config('modules.root');
         $this->request = $request;
-        $this->role = $role;
+        $this->setModel(new Role());
     }
 
     /**
@@ -34,7 +30,7 @@ class RoleController extends Controller
     public function index()
     {
         $this->templateName .= 'wrapper';
-        $this->data['items'] = $this->role->all();
+        $this->data['items'] = $this->model->all();
 
         return view($this->templateName, $this->data);
     }
@@ -55,7 +51,7 @@ class RoleController extends Controller
      */
     public function store($locale)
     {
-        $this->role->create($this->data());
+        $this->model->create($this->data());
 
         return redirect()->route('backend.roles.index', ['locale' => $locale]);
     }
@@ -65,7 +61,7 @@ class RoleController extends Controller
      */
     public function show()
     {
-        return $this->role->getList($this->request->status);
+        return $this->model->getList($this->request->status);
     }
 
     /**
@@ -97,7 +93,7 @@ class RoleController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->role->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -109,7 +105,7 @@ class RoleController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->role->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $item->update($this->data($item->id));
 
         return redirect()->back();
@@ -122,7 +118,7 @@ class RoleController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->role->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return redirect()->back();
     }

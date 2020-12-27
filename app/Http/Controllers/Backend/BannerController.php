@@ -3,32 +3,24 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
-use App\Http\Controllers\Backend\Controller;
 use App\Models\Banner;
-use App\Models\Brand;
 use App\Models\Translations\Banner as BannerT;
 use Illuminate\Http\Request;
 
-class BannerController extends Controller
+class BannerController extends BaseController
 {
-    private $banner;
-    private $bannerT;
-
     /**
      * BannerController constructor.
      * @param Request $request
-     * @param Banner $banner
-     * @param BannerT $bannerT
      */
-    public function __construct(Request $request, Banner $banner, BannerT $bannerT)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'banners';
         $this->templateName = 'modules.' . $this->moduleName . '.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['types'] = config('settings.root.banner_types');
-        $this->banner = $banner;
-        $this->bannerT = $bannerT;
         $this->request = $request;
+        $this->setModel(new Banner());
     }
 
     /**
@@ -39,7 +31,7 @@ class BannerController extends Controller
     {
         $this->templateName .= 'wrapper';
         $this->data['current'] = $this->request->type;
-        $this->data['items'] = $this->banner->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
+        $this->data['items'] = $this->model->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
 
         return view($this->templateName, $this->data);
     }
@@ -61,7 +53,7 @@ class BannerController extends Controller
      */
     public function store($locale)
     {
-        $this->banner->create($this->data() + ['sort' => $this->banner->getSort()]);
+        $this->model->create($this->data() + ['sort' => $this->model->getSort()]);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
@@ -76,7 +68,7 @@ class BannerController extends Controller
 
         return [
             'url'     => $this->request->url,
-            'visible' => $this->request->visible || 0,
+            'visible' => $this->request->visible,
             'src'     => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
             'type'    => $this->request->position,
         ];
@@ -90,7 +82,7 @@ class BannerController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->banner->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -102,7 +94,7 @@ class BannerController extends Controller
      */
     public function update($locale, $id)
     {
-        $this->banner->findOrFail($id)->update($this->data());
+        $this->model->findOrFail($id)->update($this->data());
 
         return redirect()->back()->with('updated', 'banner updated successfully');
     }
@@ -114,7 +106,7 @@ class BannerController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->banner->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('banner deleted successfully', '200');
     }
@@ -127,8 +119,8 @@ class BannerController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->banner->findOrFail($id);
-        $this->data['itemContent'] = $this->bannerT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new BannerT())->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -140,7 +132,8 @@ class BannerController extends Controller
      */
     public function transAction($locale, $id)
     {
-        $itemContent = $this->bannerT->getItem($locale, $id);
+        $this->setModel(new BannerT());
+        $itemContent = $this->model->getItem($locale, $id);
         $requests = [
             'title' => $this->request->title,
             'meta_title' => $this->request->meta_title,
@@ -148,23 +141,8 @@ class BannerController extends Controller
             'banner_id' => $id,
             'lang_slug' => $locale,
         ];
-        $itemContent ? $itemContent->update($requests) : $this->bannerT->create($requests);
+        $itemContent ? $itemContent->update($requests) : $this->model->create($requests);
 
         return redirect()->back()->with('updated', '200');
-    }
-
-
-    /** TODO move it to trait Http/Controllers/Traits
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->banner->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
     }
 }

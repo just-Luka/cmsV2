@@ -2,32 +2,25 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
 use App\Models\Category;
 use App\Models\Translations\Category as CategoryT;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
-class CategoryController extends Controller
+class CategoryController extends BaseController
 {
-    private $category;
-    private $categoryT;
-
     /**
      * CategoryController constructor.
      * @param Request $request
-     * @param Category $category
-     * @param CategoryT $categoryT
      */
-    public function __construct(Request $request, Category $category, CategoryT $categoryT)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'categories';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['types'] = config('settings.root.categories');
         $this->request = $request;
-        $this->category = $category;
-        $this->categoryT = $categoryT;
+        $this->setModel(new Category());
     }
 
     /**
@@ -38,7 +31,7 @@ class CategoryController extends Controller
     {
         $this->templateName .= 'wrapper';
         $this->data['current'] = $this->request->type;
-        $this->data['items'] = $this->category->getList($this->data['current'])->paginate(self::PAG_NUM)->appends($this->data['current']);
+        $this->data['items'] = $this->model->getList($this->data['current'])->paginate(self::PAG_NUM)->appends($this->data['current']);
 
         return view($this->templateName, $this->data);
     }
@@ -60,7 +53,7 @@ class CategoryController extends Controller
      */
     public function store($locale)
     {
-        $this->category->create($this->data() + ['sort' => $this->category->getSort()]);
+        $this->model->create($this->data() + ['sort' => $this->model->getSort()]);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
@@ -90,7 +83,7 @@ class CategoryController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->category->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -103,7 +96,7 @@ class CategoryController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->category->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'category updated successfully');
@@ -116,7 +109,7 @@ class CategoryController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->category->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('Category deleted successfully', '200');
     }
@@ -129,8 +122,8 @@ class CategoryController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->category->findOrFail($id);
-        $this->data['itemContent'] = $this->categoryT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new CategoryT())->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -142,29 +135,16 @@ class CategoryController extends Controller
      */
     public function transAction($locale, $id)
     {
-        $itemContent = $this->categoryT->getItem($locale, $id);
+        $this->setModel(new CategoryT());
+        $itemContent = $this->model->getItem($locale, $id);
 
         $request = [
             'title'       => $this->request->title,
             'category_id' => $id,
             'lang_slug'   => $locale,
         ];
-        $itemContent ? $itemContent->update($request) : $this->categoryT->create($request);
+        $itemContent ? $itemContent->update($request) : $this->model->create($request);
 
-        return redirect()->back()->with('saved', 'name saved successfully!');
-    }
-
-    /**
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->category->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
+        return redirect()->back()->with('updated', 'name saved successfully!');
     }
 }

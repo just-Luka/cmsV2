@@ -3,21 +3,14 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 
-class Translation extends Model implements ITranslate
+class Translation extends BaseModel implements ITranslate
 {
     protected $table = 'translation_trans';
     protected $guarded = [];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function translation()
-    {
-        return $this->belongsTo('App\Models\Translation','translation_id','id');
-    }
 
     /**
      * @param $lang

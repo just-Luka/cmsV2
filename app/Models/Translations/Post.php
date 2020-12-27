@@ -3,9 +3,10 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class Post extends Model implements ITranslate
+class Post extends BaseModel implements ITranslate
 {
     protected $table = 'post_trans';
     protected $guarded = [];

@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Page extends RootModel
+class Page extends BaseModel
 {
     protected $table = 'pages';
     protected $guarded = [];

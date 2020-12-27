@@ -3,11 +3,10 @@
 
 namespace App\Models\Translations;
 
-
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Event extends Model implements ITranslate
+class Event extends BaseModel implements ITranslate
 {
     protected $table = "event_trans";
     protected $guarded = [];

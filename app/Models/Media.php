@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Facades\FileLib;
 use Illuminate\Support\Facades\Auth;
 
-class Media extends RootModel
+class Media extends BaseModel
 {
 
     protected $guarded = [];

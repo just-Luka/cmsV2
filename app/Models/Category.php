@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Category extends RootModel
+class Category extends BaseModel
 {
     protected $table = 'categories';
     protected $guarded = [];

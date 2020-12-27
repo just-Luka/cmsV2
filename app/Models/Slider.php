@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-class Slider extends RootModel
+class Slider extends BaseModel
 {
     protected $table = 'sliders';
     protected $fillable = [

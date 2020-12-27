@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-class RefCategory extends RootModel
+class RefCategory extends BaseModel
 {
     protected $table = 'ref_category';
     protected $guarded = [];

@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
-use App\Models\Media;
 use Illuminate\Http\Request;
 
-class MediaController extends Controller
+class MediaController extends BaseController
 {
     /**
      * MediaController constructor.

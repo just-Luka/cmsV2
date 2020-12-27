@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Backend;
 
 use Illuminate\Support\Str;
 
-class ApiController extends Controller
+class ApiController extends BaseController
 {
     private $modelPath = 'App\\Models\\';
 

@@ -3,20 +3,12 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Page extends Model implements ITranslate
+class Page extends BaseModel implements ITranslate
 {
     protected $table = 'page_trans';
     protected $guarded = [];
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function pages()
-    {
-        return $this->belongsTo(Page::class);
-    }
 
     /**
      * @param $lang
@@ -27,5 +19,4 @@ class Page extends Model implements ITranslate
     {
         return $this->where('lang_slug', $lang)->where('page_id', $id)->first();
     }
-
 }

@@ -3,9 +3,9 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Banner extends Model implements ITranslate
+class Banner extends BaseModel implements ITranslate
 {
     protected $table = 'banner_trans';
     protected $guarded = [];

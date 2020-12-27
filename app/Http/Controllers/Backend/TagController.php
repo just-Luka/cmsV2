@@ -2,30 +2,25 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
 use App\Models\Tag;
 use Illuminate\Http\Request;
 use App\Models\Translations\Tag as TagT;
 use Illuminate\Validation\Rule;
 
-class TagController extends Controller
+class TagController extends BaseController
 {
-    private $tag;
-    private $tagT;
-
     /**
      * TagController constructor.
      * @param Request $request
      */
-    public function __construct(Request $request, Tag $tag, TagT $tagT)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'tags';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['tags'] = config('settings.root.tags');
         $this->request = $request;
-        $this->tag = $tag;
-        $this->tagT = $tagT;
+        $this->setModel(new Tag());
     }
 
     /**
@@ -36,7 +31,7 @@ class TagController extends Controller
     {
         $this->templateName .= 'wrapper';
         $this->data['current'] = $this->request->type;
-        $this->data['items'] = $this->tag->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
+        $this->data['items'] = $this->model->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
 
         return view($this->templateName, $this->data);
     }
@@ -55,11 +50,10 @@ class TagController extends Controller
     /**
      * @param $locale
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function store($locale)
     {
-        $this->tag->create($this->data() + ['sort' => $this->tag->getSort()]);
+        $this->model->create($this->data() + ['sort' => $this->model->getSort()]);
 
         return redirect()->route('backend.' . $this->moduleName . '.index', ['locale' => $locale]);
     }
@@ -88,7 +82,7 @@ class TagController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->tag->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -97,11 +91,10 @@ class TagController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function update($locale, $id)
     {
-        $item = $this->tag->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $item->update($this->data($item->id));
 
         return redirect()->back()->with('updated', 'tag updated successfully');
@@ -114,7 +107,7 @@ class TagController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->tag->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('Tag deleted successfully', '200');
     }
@@ -127,8 +120,8 @@ class TagController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->tag->findOrFail($id);
-        $this->data['itemContent'] = $this->tagT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new TagT())->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -137,33 +130,19 @@ class TagController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function transAction($locale, $id)
     {
-        $item = $this->tagT->getItem($locale, $id);
+        $this->setModel(new TagT());
+        $item = $this->model->getItem($locale, $id);
 
         $requests = [
             'title'        => $this->request->title,
             'tag_id'      => $id,
             'lang_slug'   => $locale,
         ];
-        $item ? $item->update($requests) : $this->tagT->create($requests);
+        $item ? $item->update($requests) : $this->model->create($requests);
 
-        return redirect()->back()->with('saved', 'trans saved successfully!');
-    }
-
-    /**
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->tag->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
+        return redirect()->back()->with('updated', 'trans saved successfully!');
     }
 }

@@ -3,9 +3,9 @@
 namespace App\Models\Translations;
 
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Category extends Model implements ITranslate
+class Category extends BaseModel implements ITranslate
 {
     protected $table = 'category_trans';
     protected $guarded = [];
@@ -18,14 +18,5 @@ class Category extends Model implements ITranslate
     public function getItem($lang, $id)
     {
         return $this->where('lang_slug', $lang)->where('category_id', $id)->first();
-    }
-
-    /**
-     * @param $name
-     * @return mixed
-     */
-    public function getItemByName($name)
-    {
-        return $this->where('name', $name)->first();
     }
 }

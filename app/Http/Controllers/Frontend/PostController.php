@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Frontend\Controller;
 use App\Models\Post;
-use Illuminate\Http\Request;
 
-class PostController extends Controller
+class PostController extends BaseController
 {
 
     /**

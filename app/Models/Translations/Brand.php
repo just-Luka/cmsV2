@@ -3,11 +3,10 @@
 
 namespace App\Models\Translations;
 
-
 use App\Contracts\ITranslate;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Brand extends Model implements ITranslate
+class Brand extends BaseModel implements ITranslate
 {
     protected $table = 'brand_trans';
     protected $guarded = [];

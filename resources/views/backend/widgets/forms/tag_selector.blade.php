@@ -3,17 +3,17 @@
     <select name="tag" id="tag" class="select2 select2-hidden-accessible" multiple="" data-placeholder="Select a State" style="width: 100%;">
         @if(!$matches)
             @foreach($tags as $tag)
-                <option value="{{ $tag->id }}">{{ $tag->translation->title }}</option>
+                <option value="{{ $tag->id }}">{{ $tag->translation->title ?? '####' }}</option>
             @endforeach
         @else
             @foreach($tags as $tag)
                 @foreach($matches as $myTag)
                     @if($myTag->id == $tag->id)
-                        <option value="{{ $tag->id }}" selected>{{ $tag->translation->title}}</option>
+                        <option value="{{ $tag->id }}" selected>{{ $tag->translation->title ?? '####'}}</option>
                         @continue(2);
                     @endif
                 @endforeach
-                <option value="{{ $tag->id }}">{{ $tag->translation->title }}</option>
+                <option value="{{ $tag->id }}">{{ $tag->translation->title ?? '####' }}</option>
             @endforeach
         @endif
     </select>

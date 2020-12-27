@@ -17,7 +17,7 @@ class CreateMenuTable extends Migration
             $table->id();
             $table->timestamps();
             $table->string('redirect')->nullable();
-            $table->boolean('visible')->default(0);
+            $table->boolean('visible')->nullable();
             $table->string('position')->nullable();
             $table->integer('sort');
             $table->unsignedBigInteger('parent_id')->nullable();

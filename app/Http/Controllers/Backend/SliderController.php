@@ -3,24 +3,19 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Facades\FileLib;
-use App\Http\Controllers\Backend\Controller;
-use App\Models\Post;
 use App\Models\Slider;
 use App\Models\Translations\Slider as SliderT;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class SliderController extends Controller
+class SliderController extends BaseController
 {
-    private $slider;
-    private $sliderT;
-
     /**
      * SliderController constructor.
      * @param Request $request
      */
-    public function __construct(Request $request, Slider $slider, SliderT $sliderT)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'sliders';
         $this->templateName = 'modules.'.$this->moduleName.'.';
@@ -28,8 +23,7 @@ class SliderController extends Controller
         $this->data['attachments'] = config('settings.root.slider_attachments');
         $this->data['positions'] = config('settings.root.slider_positions');
         $this->request = $request;
-        $this->slider = $slider;
-        $this->sliderT = $sliderT;
+        $this->setModel(new Slider());
     }
 
     /**
@@ -40,7 +34,7 @@ class SliderController extends Controller
     {
         $this->templateName .= 'wrapper';
         $this->data['current'] = $this->request->type;
-        $this->data['items'] = $this->slider->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
+        $this->data['items'] = $this->model->getList($this->data['current'])->paginate(self::PAG_NUM)->appends(['type' => $this->data['current']]);
 
         return view($this->templateName, $this->data);
     }
@@ -63,8 +57,8 @@ class SliderController extends Controller
     public function store($locale)
     {
         $this->request->validate(['concrete_attachment' => 'required']);
-        $this->slider->create($this->data() + [
-                'sort' => $this->slider->getSort(),
+        $this->model->create($this->data() + [
+                'sort' => $this->model->getSort(),
                 'attachment'    => $this->request->attachment,
                 'attachment_id' => $this->request->concrete_attachment
             ]);
@@ -78,9 +72,9 @@ class SliderController extends Controller
     private function data(): array
     {
         return [
-            'position'      => $this->request->position,
-            'visible'       => $this->request->visible,
-            'image'         => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'position' => $this->request->position,
+            'visible'  => $this->request->visible,
+            'image'    => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
         ];
     }
 
@@ -92,7 +86,7 @@ class SliderController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['items'] = $this->slider->findOrFail($id);
+        $this->data['items'] = $this->model->findOrFail($id);
         $this->data['attached'] = DB::table($this->data['sliderData']->attachment)->find($this->data['sliderData']->attachment_id);
 
         return view($this->templateName, $this->data);
@@ -105,7 +99,7 @@ class SliderController extends Controller
      */
     public function update($locale, $id)
     {
-        $this->slider->findOrFail($id)->update($this->data());
+        $this->model->findOrFail($id)->update($this->data());
 
         return redirect()->back()->with('updated', 'slider updated successfully');
     }
@@ -117,7 +111,7 @@ class SliderController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->slider->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('slider deleted successfully', '200');
     }
@@ -130,8 +124,8 @@ class SliderController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->slider->findOrFail($id);
-        $this->data['itemContent'] = $this->sliderT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new SliderT())->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -140,34 +134,20 @@ class SliderController extends Controller
      * @param $locale
      * @param $id
      * @return \Illuminate\Http\RedirectResponse
-     * @throws \Illuminate\Validation\ValidationException
      */
     public function transAction($locale, $id)
     {
+        $this->setModel(new SliderT());
         $this->request->validate(['meta_title' => 'required|max:255']);
-        $itemContent = $this->sliderT->getItem($locale, $id);
+        $itemContent = $this->model->getItem($locale, $id);
         $requests = [
             'meta_title' => $this->request->meta_title,
             'content' => $this->request->tm,
             'slider_id' => $id,
             'lang_slug' => $locale,
         ];
-        $itemContent ? $itemContent->update($requests) : $this->sliderT->create($requests);
+        $itemContent ? $itemContent->update($requests) : $this->model->create($requests);
 
         return redirect()->back()->with('updated', '200');
-    }
-
-    /**
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->slider->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
     }
 }

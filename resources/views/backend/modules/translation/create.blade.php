@@ -49,12 +49,23 @@
           </div>
     </div>
 @if(\Session::has('created'))
-    <div class="col-md-4" style="margin-left:auto; margin-top: 15%">
-        <div class="alert alert-success alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-            <h5><i class="icon fas fa-check"></i> {{ lang('alert') }}!</h5>
-            {{ $moduleName.' - '.lang('created_successfully') }}
+    <div id="toast-container" class="toast-top-right">
+        <div class="toast toast-success" aria-live="polite" style="">
+            <div class="toast-message">Translation is created successfully!</div>
         </div>
     </div>
+
+    @push('scripts')
+        <script>
+            $('#toast-container').on('click', () => {
+                $('#toast-container').prop('hidden', true);
+            })
+        </script>
+    @endpush
+
+    @push('styles')
+        <link rel="stylesheet" href="{{ asset('adminLTE/plugins/toastr/toastr.min.css') }}">
+    @endpush
+
 @endif
 @endsection

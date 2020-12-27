@@ -2,13 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Frontend\Controller;
 use App\Models\Page;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\App;
-use App\Models\Translations\Page as PageT;
 
-class PageController extends Controller
+class PageController extends BaseController
 {
     /**
      * PageController constructor.

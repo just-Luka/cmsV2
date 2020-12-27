@@ -2,35 +2,27 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
 use App\Models\Language;
 use App\Models\Translation;
-use App\Models\TranslationDuplicate;
 use App\Models\Translations\Translation as TranslationT;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
-class TranslationController extends Controller
+class TranslationController extends BaseController
 {
-    private $translationT;
-    private $translation;
-
     /**
      * TranslationController constructor.
      * @param Request $request
-     * @param TranslationT $translationT
-     * @param Translation $translation
      */
-    public function __construct(Request $request, TranslationT $translationT, Translation $translation)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'translation';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['languages'] = Language::getList();
-        $this->translationT = $translationT;
-        $this->translation = $translation;
         $this->request = $request;
+        $this->setModel(new Translation());
     }
 
     /**
@@ -45,7 +37,7 @@ class TranslationController extends Controller
         /* TODO remove that view! */
         $this->data['wordsWithLocale'] = DB::table('translation_duplicates')->pluck('alternative', 'translation_id');
         $this->data['current'] = ['side' => $this->request->side, 'sort' => $this->request->sort];
-        $this->data['items'] = $this->translation
+        $this->data['items'] = $this->model
              ->getList($this->data['current']['side'], $this->data['current']['sort'])
              ->paginate(self::PAG_NUM)
              ->appends($this->data['current']);
@@ -71,7 +63,7 @@ class TranslationController extends Controller
      */
     public function store($locale)
     {
-        $item = $this->translation->create($this->data() + ['sort' => $this->translation->getSort()]);
+        $item = $this->model->create($this->data() + ['sort' => $this->model->getSort()]);
         $this->translationTAction($item->id);
 
         return redirect()->back()->with('created', 'translation created successfully');
@@ -102,14 +94,14 @@ class TranslationController extends Controller
             if (!$meaning){
                 continue;
             }
-
-            $getRow = $this->translationT->getItem($keyLang, $id);
+            $this->setModel(new TranslationT());
+            $getRow = $this->model->getItem($keyLang, $id);
 
             if($getRow){
                 $getRow->means = $meaning;
                 $getRow->save();
             }else {
-                $this->translationT->create([
+                $this->model->create([
                     'lang_slug'      => $keyLang,
                     'means'          => $meaning,
                     'translation_id' => $id,
@@ -126,8 +118,8 @@ class TranslationController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->translation->findOrFail($id);
-        $this->data['list'] = $this->translationT->where('lang_slug', 'like', '%')->where('translation_id', $id)->get();
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['list'] = (new TranslationT())->where('lang_slug', 'like', '%')->where('translation_id', $id)->get();
 
         return view($this->templateName, $this->data);
     }
@@ -140,7 +132,7 @@ class TranslationController extends Controller
      */
     public function update($locale, $id)
     {
-        $item = $this->translation->findOrFail($id);
+        $item = $this->model->findOrFail($id);
         $item->update($this->data($item->id));
         $this->translationTAction($id);
 
@@ -154,7 +146,7 @@ class TranslationController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $this->translation->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return redirect()->back()->with('deleted', 'translation deleted successfully');
     }

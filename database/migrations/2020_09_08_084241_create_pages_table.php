@@ -19,7 +19,7 @@ class CreatePagesTable extends Migration
             $table->string('slug');
             $table->string('image')->nullable();
             $table->string('featured_image')->nullable();
-            $table->boolean('visible')->default(0);
+            $table->boolean('visible')->nullable();
             $table->integer('sort');
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->unsignedBigInteger('user_id')->nullable();

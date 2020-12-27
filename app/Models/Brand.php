@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-class Brand extends RootModel
+class Brand extends BaseModel
 {
     protected $table ='brands';
     protected $guarded = [];

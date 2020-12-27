@@ -29,6 +29,7 @@ class TinyMCE {
         if(!$fileName){
             return false;
         }
+        /* TODO: REWRITE ON REGEX! СКА*/
         $lenFileName = strlen($fileName);
         $lenSegment = strlen($segment);
         $lenOrigin = strpos($fileName, $segment) + $lenSegment+1;

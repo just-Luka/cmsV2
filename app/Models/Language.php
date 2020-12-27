@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Language extends RootModel
+class Language extends BaseModel
 {
     protected $fillable = [
         'lang',

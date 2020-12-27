@@ -2,35 +2,25 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
-use App\Models\Language;
 use App\Models\Menu;
-use App\Models\Page;
 use Illuminate\Http\Request;
 use App\Models\Translations\Menu as menuT;
 
-class MenuController extends Controller
+class MenuController extends BaseController
 {
-    private $menu;
-    private $menuT;
-    private $page;
-
     /**
      * MenuController constructor.
      * @param Request $request
-     * @param Menu $menu
-     * @param menuT $menuT
      */
-    public function __construct(Request $request, Menu $menu, menuT $menuT)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'menus';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->data['positions'] = config('settings.root.menu_position');
         $this->data['attachments'] = config('settings.root.menu_attachments');
-        $this->menu = $menu;
-        $this->menuT = $menuT;
         $this->request = $request;
+        $this->setModel(new Menu());
     }
 
     /**
@@ -40,7 +30,7 @@ class MenuController extends Controller
     public function index($locale)
     {
         $this->templateName .= 'wrapper';
-        $this->data['items'] = $this->menu->getList()->paginate(self::PAG_NUM);
+        $this->data['items'] = $this->model->getList()->paginate(self::PAG_NUM);
 
         return view($this->templateName, $this->data);
     }
@@ -66,8 +56,8 @@ class MenuController extends Controller
     public function store($locale)
     {
         $this->validate($this->request, ['redirect' => 'required_without:concrete_attachment']);
-        $this->menu->create($this->data() + [
-                'sort' => $this->menu->getSort(),
+        $this->model->create($this->data() + [
+                'sort' => $this->model->getSort(),
                 'parent_id' => $this->request->parentID,
                 'redirect' => $this->request->redirect,
                 'attachment' => $this->request->attachment,
@@ -85,7 +75,7 @@ class MenuController extends Controller
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['item'] = $this->menu->findOrFail($id);
+        $this->data['item'] = $this->model->findOrFail($id);
 
         return view($this->templateName, $this->data);
     }
@@ -96,7 +86,7 @@ class MenuController extends Controller
     private function data()
     {
         return [
-            'visible' => $this->request->visible || 0,
+            'visible' => $this->request->visible,
             'position' => $this->request->position,
         ];
     }
@@ -108,7 +98,7 @@ class MenuController extends Controller
      */
     public function update($locale, $id)
     {
-        $this->menu->findOrFail($id)->update($this->data());
+        $this->model->findOrFail($id)->update($this->data());
 
         return redirect()->back()->with('updated', 'menu updated successfully');
     }
@@ -120,12 +110,12 @@ class MenuController extends Controller
      */
     public function destroy($locale, $id)
     {
-        $menuChildren = $this->menu->getChildren($id);
+        $menuChildren = $this->model->getChildren($id);
         if ($menuChildren->get()){
             $menuChildren->delete();
         }
 
-        $this->menu->findOrFail($id)->delete();
+        $this->model->findOrFail($id)->delete();
 
         return response('menu with children deleted successfully', '200');
     }
@@ -138,8 +128,8 @@ class MenuController extends Controller
     public function trans($locale, $id)
     {
         $this->templateName .= 'content_edit';
-        $this->data['item'] = $this->menu->findOrFail($id);
-        $this->data['itemContent'] = $this->menuT->getItem($locale, $id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new MenuT)->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
     }
@@ -151,13 +141,14 @@ class MenuController extends Controller
      */
     public function transAction($locale, $id)
     {
+        $this->setModel(new menuT());
         $this->request->validate(['title' => 'required|min:2|max:100']);
-        $itemContent = $this->menuT->getItem($locale, $id);
+        $itemContent = $this->model->getItem($locale, $id);
         $requests = ['title' => $this->request->title];
 
-        $itemContent ? $itemContent->update($requests) : $this->menuT->create($requests + ['menu_id' => $id, 'lang_slug' => $locale]);
+        $itemContent ? $itemContent->update($requests) : $this->model->create($requests + ['menu_id' => $id, 'lang_slug' => $locale]);
 
-        return redirect()->back()->with('saved', 'menu title saved successfully!');
+        return redirect()->back()->with('updated', 'menu title saved successfully!');
     }
 
     /**
@@ -168,24 +159,10 @@ class MenuController extends Controller
     public function inside($locale, $id)
     {
         $this->templateName .= 'inside.wrapper';
-        $this->data['items'] = $this->menu->where('parent_id', $id)->getList()->paginate(self::PAG_NUM);
-        $this->data['item'] = $this->menu->findOrFail($id);
-        $this->data['itemContent'] = $this->menuT->getItem($locale, $id);
+        $this->data['items'] = $this->model->where('parent_id', $id)->getList()->paginate(self::PAG_NUM);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['itemContent'] = (new MenuT)->getItem($locale, $id);
 
         return view($this->templateName, $this->data);
-    }
-
-    /**
-     * @param $locale
-     * @param $id
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
-     */
-    public function visible($locale, $id)
-    {
-        $item = $this->menu->findOrFail($id);
-        $item->visible = $this->request->action ? 1 : 0;
-        $item->save();
-
-        return response('Visible updated successfully', 200);
     }
 }

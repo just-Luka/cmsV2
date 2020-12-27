@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Frontend\Controller;
 use App\Models\Tag;
-use Illuminate\Http\Request;
 
-class TagController extends Controller
+class TagController extends BaseController
 {
 
     /**

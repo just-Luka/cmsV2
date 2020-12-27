@@ -2,26 +2,22 @@
 
 namespace App\Http\Controllers\Backend;
 
-use App\Http\Controllers\Backend\Controller;
 use App\Models\Language;
 use Illuminate\Http\Request;
 
-class LanguageController extends Controller
+class LanguageController extends BaseController
 {
-    private $language;
-
     /**
      * LanguageController constructor.
      * @param Request $request
-     * @param Language $language
      */
-    public function __construct(Request $request, Language $language)
+    public function __construct(Request $request)
     {
         $this->moduleName = 'languages';
         $this->templateName = 'modules.'.$this->moduleName.'.';
         $this->data['moduleName'] = lang($this->moduleName);
         $this->request = $request;
-        $this->language = $language;
+        $this->setModel(new Language());
     }
 
     public function index()
@@ -48,7 +44,7 @@ class LanguageController extends Controller
     {
         $this->request->validate(['country' => 'required|unique:languages|max:255', 'lang' => 'required|unique:languages|max:2|min:2']);
 
-        $this->language->create($this->request->all());
+        $this->model->create($this->request->all());
         return redirect()->back()->with('created', 'Language created successfully');
     }
 

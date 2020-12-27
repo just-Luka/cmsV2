@@ -2,20 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Frontend\Controller;
-use App\Models\Category;
-use App\Models\RefCategory;
-use App\Models\RefTag;
-use App\Models\Tag;
-use App\Models\Translations\Brand as BrandT;
-use App\Models\Media;
 use App\Models\Product;
-use App\Models\Translations\Category as CategoryT;
-use Illuminate\Http\Request;
-use App\Models\Translations\Product as ProductT;
 
-
-class ProductController extends Controller
+class ProductController extends BaseController
 {
     /**
      * ProductController constructor.

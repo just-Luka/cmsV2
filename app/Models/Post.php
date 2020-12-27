@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Post extends RootModel
+class Post extends BaseModel
 {
     protected $table = 'posts';
     protected $guarded = [];

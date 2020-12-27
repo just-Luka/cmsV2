@@ -5,9 +5,10 @@ namespace App\Models\Translations;
 
 
 use App\Contracts\ITranslate;
+use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Model;
 
-class Tag extends Model implements ITranslate
+class Tag extends BaseModel implements ITranslate
 {
     protected $table = 'tag_trans';
     protected $guarded = [];
@@ -20,14 +21,5 @@ class Tag extends Model implements ITranslate
     public function getItem($lang, $id)
     {
         return $this->where('lang_slug', $lang)->where('tag_id', $id)->first();
-    }
-
-    /**
-     * @param $name
-     * @return mixed
-     */
-    public function getItemByName($name)
-    {
-        return $this->where('name', $name)->first();
     }
 }

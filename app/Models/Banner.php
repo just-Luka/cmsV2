@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class Banner extends RootModel
+class Banner extends BaseModel
 {
     protected $table = 'banners';
     protected $guarded = [];

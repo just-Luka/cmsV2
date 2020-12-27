@@ -2,11 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
-use App\Http\Controllers\Frontend\Controller;
 use App\Models\Offer;
-use Illuminate\Http\Request;
 
-class OfferController extends Controller
+class OfferController extends BaseController
 {
     /**
      * OfferController constructor.

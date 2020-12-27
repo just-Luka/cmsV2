@@ -52,12 +52,6 @@
         </div>
     </section>
     @if(\Session::has('updated'))
-        <div class="col-md-4" style="margin-left:auto; margin-top: 6%">
-            <div class="alert alert-success alert-dismissible">
-                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                <h5><i class="icon fas fa-check"></i> {{ lang('alert') }}!</h5>
-                {{ $moduleName.' - '.lang('created_successfully') }}
-            </div>
-        </div>
+        @include('backend.widgets.alerts.success_alert')
     @endif
 @endsection

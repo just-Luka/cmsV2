@@ -3,7 +3,7 @@
 
 namespace App\Models;
 
-class OfferProduct extends RootModel
+class OfferProduct extends BaseModel
 {
     protected $table = 'offer_product';
     protected $guarded = [];

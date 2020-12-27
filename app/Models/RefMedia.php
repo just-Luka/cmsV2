@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-class RefMedia extends RootModel
+class RefMedia extends BaseModel
 {
     protected $table = 'ref_media';
     protected $guarded = [];
