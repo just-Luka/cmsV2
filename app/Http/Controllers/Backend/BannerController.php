@@ -69,7 +69,7 @@ class BannerController extends BaseController
         return [
             'url'     => $this->request->url,
             'visible' => $this->request->visible,
-            'src'     => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'src'     => FileLib::getImage($this->request->filepath)['full_src'],
             'type'    => $this->request->position,
         ];
     }

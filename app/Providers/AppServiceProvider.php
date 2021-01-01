@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->app->singleton('filterFile', function ($app) {
+        $this->app->singleton('tinyFun', function ($app) {
             return new TinyMCE();
         });
     }

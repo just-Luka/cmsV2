@@ -79,7 +79,7 @@ class OfferController extends BaseController
             'slug'    => $this->request->slug,
             'price'   => $this->request->price,
             'visible' => $this->request->visible,
-            'image'   => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'image'   => FileLib::getImage($this->request->filepath)['full_src'],
         ];
     }
 

@@ -17,7 +17,7 @@ class Media extends BaseModel
      */
     public function createMediaData(String $fileName)
     {
-        $fileData = FileLib::fileParse($fileName);
+        $fileData = FileLib::getImage($fileName);
         $extensionType = $fileData['extension'];
 
         $fileTypes = config('settings.root.file_types');

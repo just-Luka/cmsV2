@@ -19,64 +19,31 @@ class TinyMCE {
         return preg_split('/\n|\r\n?/', $text);
     }
 
-    /**
-     * @param String $fileName
+    /** You can also call that function statically but,
+     *  if you wanna change default $segment you'd say "new getImage(...)"
+     * @param $asset
      * @param string $segment
-     * @return array|bool
+     * @return array
      */
-    public function fileParse($fileName, $segment = 'storage') // You MUST not call fileParse statically, if you wanna change default $segment
+    public function getImage($asset, $segment = 'storage'): array
     {
-        if(!$fileName){
-            return false;
-        }
-        /* TODO: REWRITE ON REGEX! СКА*/
-        $lenFileName = strlen($fileName);
-        $lenSegment = strlen($segment);
-        $lenOrigin = strpos($fileName, $segment) + $lenSegment+1;
-
-        $fullSrc = $extension = $src = '';
-        $finished = $isExtensionHandled = false;
-
-        while ($lenOrigin) {
-            if ($lenFileName == $lenOrigin){
-                $finished = true;
-                $lenOrigin -= 1;
-            }
-            if (!$finished) {
-                $fullSrc .= $fileName[$lenOrigin];
-                $lenOrigin++;
-            }else{
-                if ($fileName[$lenOrigin] === '/')
-                    break;
-
-                if ($fileName[$lenOrigin] === '.')
-                    $isExtensionHandled = true;
-
-                if (!$isExtensionHandled)
-                    $extension .= $fileName[$lenOrigin];
-
-                $src .= $fileName[$lenOrigin];
-                $lenOrigin--;
-            }
-        }
+        $pathInfo = pathinfo($asset);
+        preg_match('/(?<='.$segment.'.).*$/', $asset,$path);
 
         return [
-            'full_src' => $fullSrc, // from $segment e.x : /user_1/profile/photo1.jpg
-            'extension' => strrev($extension), // e.x jpg, png ...
-            'src' => strrev($src), // photo1.jpg
+            'full_src'   => $path[0] ?? null,
+            'src'        => $pathInfo['basename'] ?? null,
+            'extension'  => $pathInfo['extension'] ?? null,
         ];
     }
-
     /**
      * @param $mediaFileData
      * @return string
      */
-    public function fileToString($mediaFileData)
+    public function getOptimizeSrc($mediaFileData): string
     {
         $string = '';
-        if (!$mediaFileData){
-            return $string;
-        }
+        if (!$mediaFileData) return $string;
 
         foreach ($mediaFileData as $key => $mediaFile) {
             if ($key != 0) {

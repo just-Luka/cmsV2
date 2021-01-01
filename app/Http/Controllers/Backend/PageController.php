@@ -74,7 +74,7 @@ class PageController extends BaseController
         return [
             'slug' => $this->request->slug,
             'template' => $this->request->template,
-            'image' => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'image' => FileLib::getImage($this->request->filepath)['full_src'],
             'visible' => $this->request->visible,
         ];
     }
@@ -130,7 +130,7 @@ class PageController extends BaseController
         $this->data['item'] = $this->model->findOrFail($id);
         $this->data['itemContent'] = (new PageT())->getItem($locale, $id);
         $this->data['mediaFileData'] = (new Media())->getMediaByRef($this->moduleName, $id);
-        $this->data['fileString'] = FileLib::fileToString($this->data['mediaFileData']);
+        $this->data['fileString'] = FileLib::getOptimizeSrc($this->data['mediaFileData']);
 
         return view($this->templateName, $this->data);
     }

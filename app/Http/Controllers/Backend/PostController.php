@@ -79,7 +79,7 @@ class PostController extends BaseController
         return [
             'slug' => $this->request->slug,
             'template' => $this->request->template,
-            'image' => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'image' => FileLib::getImage($this->request->filepath)['full_src'],
             'visible' => $this->request->visible,
         ];
     }

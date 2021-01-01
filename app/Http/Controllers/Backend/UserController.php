@@ -75,7 +75,7 @@ class UserController extends BaseController
         return [
             'name'    => $this->request->name,
             'role_id' => $this->request->selectedRole,
-            'image'   => FileLib::fileParse($this->request->filepath)['full_src'] ?? null
+            'image'   => FileLib::getImage($this->request->filepath)['full_src'],
         ];
     }
 

@@ -92,7 +92,7 @@ class ProductController extends BaseController
             'fake_sold' => $this->request->sold,
             'on_main'   => $this->request->on_main,
             'visible'   => $this->request->visible,
-            'image'     => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'image'     => FileLib::getImage($this->request->filepath)['full_src'],
         ];
     }
 
@@ -152,7 +152,7 @@ class ProductController extends BaseController
         $this->data['item'] = $this->model->findOrFail($id);
         $this->data['itemContent'] = (new ProductT())->getItem($locale, $id);
         $this->data['mediaFileData'] = (new Media())->getMediaByRef($this->moduleName, $id);
-        $this->data['fileString'] = FileLib::fileToString($this->data['mediaFileData']);
+        $this->data['fileString'] = FileLib::getOptimizeSrc($this->data['mediaFileData']);
 
         return view($this->templateName, $this->data);
     }

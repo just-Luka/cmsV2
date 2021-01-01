@@ -74,7 +74,7 @@ class SliderController extends BaseController
         return [
             'position' => $this->request->position,
             'visible'  => $this->request->visible,
-            'image'    => FileLib::fileParse($this->request->filepath)['full_src'] ?? null,
+            'image'    => FileLib::getImage($this->request->filepath)['full_src'],
         ];
     }
 
@@ -86,8 +86,8 @@ class SliderController extends BaseController
     public function edit($locale, $id)
     {
         $this->templateName .= 'edit';
-        $this->data['items'] = $this->model->findOrFail($id);
-        $this->data['attached'] = DB::table($this->data['sliderData']->attachment)->find($this->data['sliderData']->attachment_id);
+        $this->data['item'] = $this->model->findOrFail($id);
+        $this->data['attached'] = DB::table($this->data['item']->attachment)->find($this->data['item']->attachment_id);
 
         return view($this->templateName, $this->data);
     }
