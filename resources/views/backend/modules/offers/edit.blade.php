@@ -56,7 +56,7 @@
                                 ])
                             </div>
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">{{ lang('updated') }}</button>
+                                <button type="submit" class="btn btn-primary">{{ lang('update') }}</button>
                             </div>
                         </form>
                     </div>

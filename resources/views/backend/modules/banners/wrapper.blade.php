@@ -15,7 +15,7 @@
     lang('title'),
     lang('url'),
     lang('type'),
-    lang('src'),
+    lang('image'),
 ],
 
 'tableListPath' => 'backend.modules.banners.list',

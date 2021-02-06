@@ -4,7 +4,7 @@
      <div class="col-md-6" style="margin: auto">
         <div class="card card-primary">
             <div class="card-header">
-                <h3 class="card-title">{{ lang('menu_trans') }}</h3>
+                <h3 class="card-title">{{ lang('translate') }}</h3>
             </div>
             <div class="card-body">
                 <form method="POST" action="{{ route('backend.menus.transAction',['locale'=>App::getLocale(), 'id' => $item->id]) }}">
@@ -16,7 +16,7 @@
                           'name'   => 'title',
                           'type'  => 'text',
                           'value' => $itemContent->title ?? '',
-                          'placeholder' => 'Enter title',
+                          'placeholder' => lang('enter_title'),
                           'disabled' => false
                         ])
                     </div>

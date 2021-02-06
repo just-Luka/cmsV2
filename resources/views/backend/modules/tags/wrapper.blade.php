@@ -16,7 +16,7 @@
                 lang('tag_of'),
              ],
 
-'tableName'     => lang('category_list'),
+'tableName'     => lang('list'),
 'tableListPath' => 'backend.modules.tags.list',
 'pagination'    => true,
 'searchInput'   => false,

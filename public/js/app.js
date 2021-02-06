@@ -66631,7 +66631,7 @@ var StringToSlug = /*#__PURE__*/function (_React$Component) {
         type: "text",
         onChange: this.handleChange,
         className: "form-control",
-        placeholder: "your slug",
+        placeholder: "Slug",
         required: true
       })), /*#__PURE__*/react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "form-group"
@@ -66641,7 +66641,7 @@ var StringToSlug = /*#__PURE__*/function (_React$Component) {
         id: "generate-slug",
         name: "slug",
         className: "form-control",
-        placeholder: "your slug",
+        placeholder: "Slug",
         readOnly: true
       })));
     }
@@ -66782,8 +66782,8 @@ if (document.getElementById("have_image")) {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! /var/www/html/profbeauty/resources/js/app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! /var/www/html/profbeauty/resources/sass/app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! /var/www/html/cmsV3/resources/js/app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! /var/www/html/cmsV3/resources/sass/app.scss */"./resources/sass/app.scss");
 
 
 /***/ })

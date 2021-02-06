@@ -61,7 +61,6 @@ class Media extends BaseModel
      */
     public function getList($fileType=null, $sortById='asc')
     {
-
         return $this->where('type', $fileType ?? 'LIKE', '%')->orderBy('id', $sortById);
     }
 
@@ -88,9 +87,13 @@ class Media extends BaseModel
      */
     public function getMediaByRef($moduleName, $pageID)
     {
-        $refMedia = new RefMedia();
-        $references = $refMedia->getList($moduleName, $pageID)->get();
+        $references = (new RefMedia())->getList($moduleName, $pageID)->get();
 
         return $this->getViaRefList($references);
+    }
+
+    public function getBySrc($src)
+    {
+        return $this->where('full_src', $src)->first();
     }
 }

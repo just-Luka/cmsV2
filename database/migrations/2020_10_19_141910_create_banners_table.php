@@ -19,7 +19,7 @@ class CreateBannersTable extends Migration
             $table->string('url')->nullable();
             $table->string('src')->nullable();
             $table->string('type');
-            $table->integer('visible');
+            $table->boolean('visible')->nullable();
             $table->integer('sort');
         });
     }

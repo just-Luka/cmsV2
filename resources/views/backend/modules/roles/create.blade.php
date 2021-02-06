@@ -18,7 +18,7 @@
                                    'name'           => 'status',
                                    'type'           => 'text',
                                    'value'          => '',
-                                   'placeholder'    => 'Enter status',
+                                   'placeholder'    => lang('enter_status'),
                                    'required'       => true
                                 ])
                                 <div class="form-group">

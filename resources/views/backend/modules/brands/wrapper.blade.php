@@ -12,7 +12,7 @@
 ],
 
 'tableListPath' => 'backend.modules.brands.list',
-'tableName'     => lang('brand_list'),
+'tableName'     => lang('list'),
 'pagination'    => true,
 'searchInput'   => false,
 'list'          => $items,

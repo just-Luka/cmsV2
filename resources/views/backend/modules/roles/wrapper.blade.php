@@ -8,7 +8,7 @@
                         lang('created_at')
                      ],
 
-    'tableName'     => lang('role_list'),
+    'tableName'     => lang('list'),
     'tableListPath' => 'backend.modules.roles.list',
     'pagination'    => false,
     'searchInput'   => false,

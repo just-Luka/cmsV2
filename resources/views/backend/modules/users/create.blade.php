@@ -7,7 +7,7 @@
                 <div class="col-md-6" style="margin: auto">
                     <div class="card card-primary">
                         <div class="card-header">
-                            <h3 class="card-title">{{ lang('create_user') }}</h3>
+                            <h3 class="card-title">{{ lang('create') }}</h3>
                         </div>
                         <form method="POST" action="{{ route('backend.users.store', ['locale'=>App::getLocale()]) }}">
                             @csrf
@@ -18,7 +18,7 @@
                                    'name'           => 'name',
                                    'type'           => 'text',
                                    'value'          => '',
-                                   'placeholder'    => 'Enter username',
+                                   'placeholder'    => lang('enter_username'),
                                    'required'       => true
                                 ])
                                 <div class="form-group">
@@ -36,7 +36,7 @@
                                    'name'           => 'email',
                                    'type'           => 'email',
                                    'value'          => '',
-                                   'placeholder'    => 'Enter email',
+                                   'placeholder'    => lang('enter_email'),
                                    'required'       => true
                                 ])
                                 @include('backend.widgets.forms.left_input',
@@ -45,7 +45,7 @@
                                    'name'           => 'password',
                                    'type'           => 'password',
                                    'value'          => '',
-                                   'placeholder'    => 'Enter password',
+                                   'placeholder'    => lang('enter_password'),
                                    'required'       => true
                                 ])
                                 @include('backend.widgets.forms.image_upload',
@@ -83,7 +83,7 @@
         @push('styles')
             <link rel="stylesheet" href="{{ asset('adminLTE/plugins/toastr/toastr.min.css') }}">
         @endpush
-
+        {{--TODO CREATED--}}
         @include('backend.widgets.alerts.success_alert')
     @endif
 @endsection

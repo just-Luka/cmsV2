@@ -15,7 +15,7 @@
                 lang('category_of'),
              ],
 
-'tableName'     => lang('category_list'),
+'tableName'     => lang('list'),
 'tableListPath' => 'backend.modules.categories.list',
 'pagination'    => true,
 'searchInput'   => false,

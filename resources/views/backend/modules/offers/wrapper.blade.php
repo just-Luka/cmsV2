@@ -13,7 +13,7 @@
 ],
 
 'tableListPath' => 'backend.modules.offers.list',
-'tableName'     => lang('offers'),
+'tableName'     => lang('list'),
 'pagination'    => true,
 'searchInput'   => false,
 'list'          => $items,

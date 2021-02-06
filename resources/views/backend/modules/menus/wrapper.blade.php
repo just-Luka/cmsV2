@@ -11,7 +11,7 @@
                 lang('position')
              ],
 
-'tableName'     => lang('menu_list'),
+'tableName'     => lang('list'),
 'tableListPath' => 'backend.modules.menus.list',
 'pagination'    => true,
 'searchInput'   => false,

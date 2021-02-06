@@ -18,7 +18,7 @@
                                    'name'           => 'name',
                                    'type'           => 'text',
                                    'value'          => $item->name,
-                                   'placeholder'    => 'Enter username',
+                                   'placeholder'    => lang('enter_username'),
                                    'required'       => true
                                 ])
                                 <div class="form-group">

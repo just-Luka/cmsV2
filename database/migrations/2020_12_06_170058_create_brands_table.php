@@ -21,6 +21,11 @@ class CreateBrandsTable extends Migration
             $table->integer('sort')->nullable();
             $table->boolean('visible')->nullable();
         });
+
+        Schema::table('products', function (Blueprint $table) {
+            $table->unsignedBigInteger('brand_id')->nullable();
+            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
+        });
     }
 
     /**

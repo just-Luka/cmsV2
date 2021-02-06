@@ -10,6 +10,7 @@ class Offer extends BaseModel
 
     /**
      * @param $slug
+     * @return mixed
      */
     public function frontItem($slug)
     {

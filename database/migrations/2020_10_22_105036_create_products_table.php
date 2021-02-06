@@ -28,8 +28,6 @@ class CreateProductsTable extends Migration
             $table->float('fake_star')->nullable();
             $table->integer('fake_sold')->nullable();
             $table->boolean('on_main')->nullable();
-            $table->unsignedBigInteger('brand_id');
-            $table->foreign('brand_id')->references('id')->on('brands')->onDelete('cascade');
         });
     }
 

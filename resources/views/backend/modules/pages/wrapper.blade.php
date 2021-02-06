@@ -11,7 +11,7 @@
        ],
 
        'tableListPath' => 'backend.modules.pages.list',
-       'tableName'     => lang('page_list'),
+       'tableName'     => lang('list'),
        'pagination'    => true,
        'searchInput'   => false,
        'list'          => $items

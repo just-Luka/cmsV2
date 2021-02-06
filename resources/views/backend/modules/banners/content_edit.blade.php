@@ -22,7 +22,7 @@
                                        'name'           => 'meta_title',
                                        'type'           => 'text',
                                        'value'          => $itemContent->meta_title ?? '',
-                                       'placeholder'    => lang('enter_meta_title'),
+                                       'placeholder'    => lang('enter'),
                                        'required'       => false
                                     ])
                         </div>

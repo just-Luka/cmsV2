@@ -22,11 +22,11 @@ class StringToSlug extends React.Component {
             <div>
                 <div className="form-group">
                     <label>Slug</label>
-                    <input type="text" onChange={this.handleChange} className="form-control" placeholder="your slug" required/>
+                    <input type="text" onChange={this.handleChange} className="form-control" placeholder="Slug" required/>
                 </div>
                 <div className="form-group">
                     <label>Generated slug</label>
-                    <input type="text" value={this.state.slug} id="generate-slug" name="slug" className="form-control" placeholder="your slug" readOnly/>
+                    <input type="text" value={this.state.slug} id="generate-slug" name="slug" className="form-control" placeholder="Slug" readOnly/>
                 </div>
             </div>
         )

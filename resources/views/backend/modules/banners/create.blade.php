@@ -18,7 +18,7 @@
                                   'name'           => 'url',
                                   'type'           => 'text',
                                   'value'          => '',
-                                  'placeholder'    => 'http://',
+                                  'placeholder'    => 'http(s)://',
                                   'required'       => false
                                 ])
                                 @include('backend.widgets.forms.check_input',

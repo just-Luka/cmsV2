@@ -25,7 +25,7 @@
            ],
 
            'tableListPath' => 'backend.modules.menus.list',
-           'tableName'     => lang('menu_list'),
+           'tableName'     => lang('list'),
            'pagination'    => true,
            'searchInput'   => false,
            'list'          => $items

@@ -69,7 +69,7 @@
        ],
 
        'tableListPath' => 'backend.modules.translation.with_progress_list',
-       'tableName'     => lang('translation_list'),
+       'tableName'     => lang('list'),
        'pagination'    => true,
        'searchInput'   => false,
        'list'          => $items,

@@ -5,7 +5,7 @@
 <div class="col-md-6" style="margin: auto">
     <div class="card card-primary">
         <div class="card-header">
-          <h3 class="card-title">{{ lang('edit_translation') }}</h3>
+          <h3 class="card-title">{{ lang('edit') }}</h3>
         </div>
         <div class="card-body">
             <form method="POST" action="{{ route('backend.translation.update',['locale'=>App::getLocale(),'id'=>$item->id]) }}">

@@ -1,6 +1,6 @@
 <div class="form-group">
     <label>{{ lang('tag') }}</label>
-    <select name="tag" id="tag" class="select2 select2-hidden-accessible" multiple="" data-placeholder="Select a State" style="width: 100%;">
+    <select name="tag" id="tag" class="select2 select2-hidden-accessible" multiple="" data-placeholder="{{ lang('select') }}" style="width: 100%;">
         @if(!$matches)
             @foreach($tags as $tag)
                 <option value="{{ $tag->id }}">{{ $tag->translation->title ?? '####' }}</option>

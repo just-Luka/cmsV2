@@ -10,7 +10,7 @@
                 lang('image'),
              ],
 
-'tableName'     => lang('product_list'),
+'tableName'     => lang('list'),
 'tableListPath' => 'backend.modules.products.list',
 'pagination'    => true,
 'searchInput'   => false,

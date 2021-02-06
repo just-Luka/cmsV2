@@ -2,8 +2,6 @@
 
 namespace App;
 
-use App\Models\Media;
-use App\Models\RefMedia;
 use App\Models\Role;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -57,10 +55,10 @@ class User extends Authenticatable
     {
         if ($roleID){
             return $this->where('role_id', $roleID)->LeftJoin('roles', 'users.role_id', '=', 'roles.id') // some role_ids -eq null
-                ->select('users.*', 'roles.status')->orderBy($orderBy ?? 'id','DESC');
+                ->select('users.*', 'roles.status')->orderBy($orderBy ?: 'id','DESC');
         }
         return $this->LeftJoin('roles', 'users.role_id', '=', 'roles.id')
-            ->select('users.*', 'roles.status')->orderBy($orderBy ?? 'id','DESC');
+            ->select('users.*', 'roles.status')->orderBy($orderBy ?: 'id','DESC');
     }
 
 }

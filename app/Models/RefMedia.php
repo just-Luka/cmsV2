@@ -30,7 +30,7 @@ class RefMedia extends BaseModel
 
         $media = new Media();
         $fileData = $media->createMediaData($file);
-        $mediaFile = $media->where('full_src', $fileData['full_src'])->first();
+        $mediaFile = $media->getBySrc($fileData['full_src']);
 
         if (!$mediaFile) {
             $storedFile = $media->create($fileData);

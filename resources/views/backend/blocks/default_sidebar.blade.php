@@ -35,7 +35,7 @@
                     <a href="{{ route('backend.menus.index', App::getLocale())}}" class="nav-link">
                         <i class="nav-icon fas fa-ellipsis-v"></i>
                         <p>
-                            {{ lang('menu') }}
+                            {{ lang('menus') }}
                             {{-- <span class="right badge badge-danger">New</span> --}}
                         </p>
                     </a>
