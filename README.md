@@ -11,6 +11,6 @@ Very useful in case if you are looking custom Backend for you Frontend project, 
  - Tags
  - Sliders
  - Menu
- - Product
+ - Products
  - User premissions
  - Localization
